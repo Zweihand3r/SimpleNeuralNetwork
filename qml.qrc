@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>Tests/Scripts/Giver.js</file>
+        <file>Tests/Scripts/Matrix.js</file>
+        <file>Tests/Scripts/Matrix_test.js</file>
+        <file>Tests/Scripts/Simple.js</file>
+        <file>Tests/AddNetwork.qml</file>
+        <file>Tests/Interface.qml</file>
+        <file>Tests/Simple.qml</file>
+        <file>Tests/Visualisation.qml</file>
+    </qresource>
+</RCC>
