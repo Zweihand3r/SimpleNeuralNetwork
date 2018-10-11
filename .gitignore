@@ -2,8 +2,7 @@
 *.autosave
 
 # QtCreator Qml
-*.SimpleNeuralNetwork.user
-*.SimpleNeuralNetwork.user.*
+SimpleNeuralNetwork.pro.*
 
 # Misc
 .DS_Store
