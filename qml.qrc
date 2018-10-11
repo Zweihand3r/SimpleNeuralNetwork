@@ -11,5 +11,9 @@
         <file>Tests/Simple.qml</file>
         <file>Tests/Visualisation.qml</file>
         <file>qml/Switches/Switches.qml</file>
+        <file>js/NeuralFunctions.js</file>
+        <file>js/Matrix.js</file>
+        <file>qml/Switches/SwitchRow.qml</file>
+        <file>js/Permutation.js</file>
     </qresource>
 </RCC>

@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 import FileManager 1.1
 
-import "./Tests"
+import './qml/Switches'
 
 ApplicationWindow {
     visible: true
@@ -12,13 +12,39 @@ ApplicationWindow {
     height: 480
     title: qsTr("Simple Neural Network")
 
+    /* UI */
+
+    Switches {
+        id: swithes
+    }
+
     FileManager {
         id: fileManager
     }
 
     Component.onCompleted: {
-        var path = fileManager.getPath(FileManager.CurrentDirectory)
-        console.log(path)
-        fileManager.saveFile("Hey you", path + "Data/Test.txt")
+//        var inputs = [
+//                    [1, 0, 0],
+//                    [1, 0, 1],
+//                    [1, 1, 0],
+//                    [1, 1, 1],
+//                ]
+
+//        var outputs = [
+//                    [0],
+//                    [1],
+//                    [0],
+//                    [1]
+//                ]
+
+//        var res = NeuralFunctions.train(inputs, outputs, 10000)
+//        console.log(NeuralFunctions.predict([0, 1, 0], res))
+    }
+
+    function printArray(arr, title) {
+        if (title) { console.log(title) }
+        arr.forEach(function(item) {
+            console.log(item)
+        })
     }
 }
