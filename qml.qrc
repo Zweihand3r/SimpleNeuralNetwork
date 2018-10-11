@@ -10,5 +10,6 @@
         <file>Tests/Interface.qml</file>
         <file>Tests/Simple.qml</file>
         <file>Tests/Visualisation.qml</file>
+        <file>qml/Switches/Switches.qml</file>
     </qresource>
 </RCC>
