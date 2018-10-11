@@ -1,0 +1,9 @@
+# QtCreator
+*.autosave
+
+# QtCreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+# Misc
+.DS_Store
