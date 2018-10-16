@@ -14,13 +14,17 @@ function train(inputs, outputs, steps, nodes) {
         console.log("Steps set to: " + steps)
 
         var weights_1 = random(inputs[0].length, nodes)
-        var weights_2 = random(nodes, 1)
+        var weights_2 = random(nodes, outputs[0].length)
 
         printArray(inputs, "Inputs:")
         printArray(outputs, "Outputs:")
         console.log("Starting training session")
 
+        var startTime = new Date()
+
         for (var index = 0; index < steps; index++) {
+            console.log("Step " + (index + 1) + " of " + steps)
+
             var l0 = inputs.slice()
             var l1 = sigmoid(dot(l0, weights_1))
             var l2 = sigmoid(dot(l1, weights_2))
@@ -40,7 +44,9 @@ function train(inputs, outputs, steps, nodes) {
 
         weights = [weights_1, weights_2]
     }
-    console.log("Finished training session")
+
+    var timeElapsed = (new Date() - startTime) / 1000
+    console.log("Finished training session in " + Number(timeElapsed).toFixed(3) + " sec")
 
     return weights
 }
@@ -54,7 +60,7 @@ function predict(inputs, weights) {
     var l1 = sigmoid(dot(inputs, weights_1))
     var l2 = sigmoid(dot(l1, weights_2))
 
-    return l2
+    return l2[0]
 }
 
 function sigmoid(x) {

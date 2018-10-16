@@ -15,5 +15,7 @@
         <file>js/Matrix.js</file>
         <file>qml/Switches/SwitchRow.qml</file>
         <file>js/Permutation.js</file>
+        <file>Tests/Tests.qml</file>
+        <file>Tests/Grid_.qml</file>
     </qresource>
 </RCC>

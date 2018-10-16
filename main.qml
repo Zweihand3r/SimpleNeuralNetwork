@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 import FileManager 1.1
 
 import './qml/Switches'
+import './Tests'
 
 ApplicationWindow {
     visible: true
@@ -14,8 +15,14 @@ ApplicationWindow {
 
     /* UI */
 
+    Tests {
+        id: tests
+//        visible: false
+    }
+
     Switches {
         id: swithes
+        visible: false
     }
 
     FileManager {
