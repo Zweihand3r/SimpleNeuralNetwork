@@ -10,13 +10,12 @@ RowLayout {
     property color networkOutputColor: "#7666EF"
 
     property int switchCount: 3
+    property int outputCount: 1
 
     property bool switchable: false
     property bool selectable: true
 
     property bool checked: true
-    property bool userOutput: false
-    property bool networkOutput: false
 
     MouseArea {
         id: checkbox
@@ -86,65 +85,86 @@ RowLayout {
 
     Item { Layout.preferredWidth: 2 }
 
-    MouseArea {
-        id: userOutputDisplay
-        Layout.preferredHeight: parent.height
-        Layout.preferredWidth: parent.height
-        onClicked: userOutput = !userOutput
-        enabled: checked; visible: selectable
+    RowLayout {
+        Repeater {
+            id: userOutRepeater
+            model: outputCount
 
-        Rectangle {
-            anchors { fill: parent }
-            color: "transparent"; radius: width / 2
-            border { width: 2; color: rootSR.color }
+            MouseArea {
+                id: userOutputDisplay
+                Layout.preferredHeight: parent.height
+                Layout.preferredWidth: parent.height
+                onClicked: output = !output
+                enabled: checked; visible: selectable
 
-            RadialGradient {
-                anchors { fill: parent; margins: -20 }
-                opacity: userOutput ? (checked ? 1 : 0) : 0
+                property bool output: false
 
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: rootSR.color }
-                    GradientStop { position: 0.125; color: rootSR.color }
-                    GradientStop { position: 0.4; color: "transparent" }
+                Rectangle {
+                    anchors { fill: parent }
+                    color: "transparent"; radius: width / 2
+                    border { width: 2; color: rootSR.color }
+
+                    RadialGradient {
+                        anchors { fill: parent; margins: -20 }
+                        opacity: userOutputDisplay.output ? (checked ? 1 : 0) : 0
+
+                        gradient: Gradient {
+                            GradientStop { position: 0.0; color: rootSR.color }
+                            GradientStop { position: 0.125; color: rootSR.color }
+                            GradientStop { position: 0.4; color: "transparent" }
+                        }
+
+                        Behavior on opacity {
+                            OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
+                        }
+                    }
+
+                    Behavior on opacity {
+                        OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
+                    }
                 }
-
-                Behavior on opacity {
-                    OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
-                }
-            }
-
-            Behavior on opacity {
-                OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
             }
         }
     }
 
     Item { Layout.preferredWidth: 2 }
 
-    Rectangle {
-        Layout.preferredHeight: parent.height
-        Layout.preferredWidth: parent.height
-        color: "transparent"; radius: width / 2
-        border { width: 2; color: networkOutputColor }
+    RowLayout {
+        Repeater {
+            id: netOutRepeater
+            model: outputCount
 
-        RadialGradient {
-            anchors { fill: parent; margins: -20 }
-            opacity: networkOutput ? 1 : 0
+            Rectangle {
+                Layout.preferredHeight: parent.height
+                Layout.preferredWidth: parent.height
+                color: "transparent"; radius: width / 2
+                border { width: 2; color: networkOutputColor }
 
-            gradient: Gradient {
-                GradientStop { position: 0.0; color: networkOutputColor }
-                GradientStop { position: 0.125; color: networkOutputColor }
-                GradientStop { position: 0.4; color: "transparent" }
-            }
+                property bool output: false
 
-            Behavior on opacity {
-                OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
+                RadialGradient {
+                    anchors { fill: parent; margins: -20 }
+                    opacity: parent.output ? 1 : 0
+
+                    gradient: Gradient {
+                        GradientStop { position: 0.0; color: networkOutputColor }
+                        GradientStop { position: 0.125; color: networkOutputColor }
+                        GradientStop { position: 0.4; color: "transparent" }
+                    }
+
+                    Behavior on opacity {
+                        OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
+                    }
+                }
+
+                Behavior on opacity {
+                    OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
+                }
             }
         }
+    }
 
-        Behavior on opacity {
-            OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
-        }
+    Component.onCompleted: {
     }
 
     function setSwitchInputs(inputs) {
@@ -170,11 +190,17 @@ RowLayout {
     }
 
     function getUserOutput() {
-        return userOutput ? 1 : 0
+        var output = []
+        for (var index = 0; index < outputCount; index++) {
+            output.push(userOutRepeater.itemAt(index).output ? 1 : 0)
+        }
+
+        return output
     }
 
     function setNetworkOutput(output) {
-        networkOutput = output === 1 ? true : false
-        console.log(output, networkOutput)
+        for (var index = 0; index < outputCount; index++) {
+            netOutRepeater.itemAt(index).output = output[index] > 0.5 ? true : false
+        }
     }
 }

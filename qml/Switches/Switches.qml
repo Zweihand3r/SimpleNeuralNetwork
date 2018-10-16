@@ -10,7 +10,8 @@ Item {
     height: parent.height
     Rectangle { anchors.fill: parent; color: "#000000" }
 
-    property int switchCount: 4
+    property int switchCount: 3
+    property int outputCount: 3
 
     Flickable {
         anchors { fill: parent; margins: 20 }
@@ -27,6 +28,7 @@ Item {
 
                 SwitchRow {
                     switchCount: rootSwitches.switchCount
+                    outputCount: rootSwitches.outputCount
                 }
             }
         }
@@ -57,7 +59,7 @@ Item {
         }
 
         inputs.forEach(function(input, index) {
-            var netout = NeuralFunctions.predict(input, res) > 0.5 ? 1 : 0
+            var netout = NeuralFunctions.predict(input, res)
             gridRepeater.itemAt(index).setNetworkOutput(netout)
         })
     }
@@ -92,7 +94,7 @@ Item {
 
             if (switchRow.checked) {
                 inputs.push(switchRow.getSwitchInputs())
-                outputs.push([switchRow.getUserOutput()])
+                outputs.push(switchRow.getUserOutput())
             }
         }
 
