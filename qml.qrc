@@ -17,5 +17,6 @@
         <file>js/Permutation.js</file>
         <file>Tests/Tests.qml</file>
         <file>Tests/Grid_.qml</file>
+        <file>Tests/Toggle.qml</file>
     </qresource>
 </RCC>
