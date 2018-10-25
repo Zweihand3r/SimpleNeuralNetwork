@@ -23,79 +23,122 @@ Item {
     property var moves: []
     property var weights: []
 
+    property var trainOutputs: []
+
     property int movetime: 80
     property bool busy: false
 
     Item {
-        id: grid
-        anchors.centerIn: parent
+        id: sidepanel
+        width: 240
+        height: parent.height
 
-        Rectangle {
-            anchors { fill: parent; margins: -6 }
-            border { width: 4; color: "black" }
+        ColumnLayout {
+            Repeater {
+                model: ["000", "001", "010", "011", "100", "101", "110", "111"]
+                RowLayout {
+                    Layout.preferredHeight: 32;
+                    Toggle { clickable: false; checked: parseInt(modelData.charAt(0)) === 1; Layout.alignment: Qt.AlignBottom }
+                    Toggle { clickable: false; checked: parseInt(modelData.charAt(1)) === 1 }
+                    Toggle { clickable: false; checked: parseInt(modelData.charAt(2)) === 1; Layout.alignment: Qt.AlignBottom }
+
+                    Text { text: ">>"; Layout.alignment: Qt.AlignVCenter }
+
+                    Toggle { Layout.alignment: Qt.AlignBottom; onCheckedChanged: trainOutputs[index][0] = checked ? 1 : 0 }
+                    Toggle {                                   onCheckedChanged: trainOutputs[index][1] = checked ? 1 : 0 }
+                    Toggle { Layout.alignment: Qt.AlignBottom; onCheckedChanged: trainOutputs[index][2] = checked ? 1 : 0 }
+                }
+            }
+
+            Button {
+                text: "Train"
+                onClicked: train("10")
+            }
+
+            Button {
+                text: (ai_timer.running ? "Stop" : "Start") + " AI"
+                onClicked: {
+                    if (ai_timer.running) ai_timer.stop()
+                    else ai_timer.start()
+                }
+            }
         }
     }
 
     Item {
-        anchors.fill: grid
+        anchors { fill: parent; leftMargin: sidepanel.width }
 
-        Rectangle {
-            id: perp
-            width: 34
-            height: 34
-            color: "#CA3434"
-            visible: false
-
-            property int _x: -1
-            property int _y: -1
-
-            Behavior on x { NumberAnimation { duration: movetime; easing.type: Easing.InCubic } }
-            Behavior on y { NumberAnimation { duration: movetime; easing.type: Easing.InCubic } }
-
-            TextField {
-                id: stealer
-                anchors.fill: parent
-                background: Item {}
-
-                Keys.onLeftPressed: movement("lt")
-                Keys.onUpPressed: movement("up")
-                Keys.onRightPressed: movement("rt")
-                Keys.onDownPressed: movement("dn")
-
-                Keys.onPressed:  {
-                    switch (event.key) {
-                    case Qt.Key_W: movefwd(); break
-                    case Qt.Key_A: turnLeft(); break
-                    case Qt.Key_D: turnRight(); break
-                    }
-                }
-            }
+        Item {
+            id: grid
+            anchors.centerIn: parent
 
             Rectangle {
-                id: perpRotator
-                radius: width / 2
-                anchors { fill: parent; margins: 4 }
-                color: "#FFFFFF"; visible: stealer.focus
+                anchors { fill: parent; margins: -6 }
+                border { width: 4; color: "black" }
+            }
+        }
 
-                Behavior on rotation { RotationAnimation { duration: movetime; easing.type: Easing.InCubic } }
+        Item {
+            anchors.fill: grid
+
+            Rectangle {
+                id: perp
+                width: 34
+                height: 34
+                color: "#CA3434"
+                visible: false
+
+                property int _x: -1
+                property int _y: -1
+
+                Behavior on x { NumberAnimation { duration: movetime; easing.type: Easing.InCubic } }
+                Behavior on y { NumberAnimation { duration: movetime; easing.type: Easing.InCubic } }
+
+                TextField {
+                    id: stealer
+                    anchors.fill: parent
+                    background: Item {}
+
+                    Keys.onLeftPressed: movement("lt")
+                    Keys.onUpPressed: movement("up")
+                    Keys.onRightPressed: movement("rt")
+                    Keys.onDownPressed: movement("dn")
+
+                    Keys.onPressed:  {
+                        switch (event.key) {
+                        case Qt.Key_W: movefwd(); break
+                        case Qt.Key_A: turnLeft(); break
+                        case Qt.Key_D: turnRight(); break
+                        }
+                    }
+                }
 
                 Rectangle {
-                    width: 4
-                    color: "#CA3434"
-                    radius: width / 2
-                    height: parent.height / 2
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-            }
+                    id: perpRotator
+                    radius: width / 2; color: "#FFFFFF"
+                    anchors { fill: parent; margins: 4 }
 
-            MouseArea {
-                id: clicky
-                anchors.fill: parent
+                    Behavior on rotation { RotationAnimation { duration: movetime; easing.type: Easing.InCubic } }
+
+                    Rectangle {
+                        width: 4
+                        color: "#CA3434"
+                        radius: width / 2
+                        height: parent.height / 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                    }
+                }
+
+                MouseArea {
+                    id: clicky
+                    anchors.fill: parent
+                }
             }
         }
     }
 
     RowLayout {
+        anchors { right: parent.right }
         TextField {
             id: tf
             implicitWidth: 240
@@ -120,26 +163,13 @@ Item {
 
             Keys.onTabPressed: stealer.forceActiveFocus()
         }
-
-        Button {
-            text: (ai_timer.running ? "Stop" : "Start") + " AI"
-            onClicked: {
-                if (ai_timer.running) ai_timer.stop()
-                else ai_timer.start()
-            }
-        }
-
-        Button {
-            text: "Train"
-            onClicked: train("10")
-        }
     }
 
     Component.onCompleted: {
         population = []
 
-        grid.width = cols * 34
-        grid.height = rows * 34
+        grid.width = cols * 34 - 2
+        grid.height = rows * 34 - 2
 
         for (var y = 0; y < rows; y++) {
             var row = []
@@ -158,10 +188,9 @@ Item {
 
         draw("rand", 1)
 
-//        var movetypes = ["turnLeft", "movefwd", "turnRight"]
-//        for (var index = 0; index < 100; index++) {
-//            moves.push(movetypes[Math.floor(Math.random() * 3)])
-//        }
+        for (var index = 0; index < 8; index++) {
+            trainOutputs.push([0, 0, 0])
+        }
     }
 
     function mark(x, y, alive) {
@@ -291,32 +320,24 @@ Item {
         }
     }
 
-    function mapMovement(outputs) {
-        if (outputs[1] > 0.5) {
-            return movefwd()
+    function mapMovement(outputs, type) {
+        switch (type) {
+        case "weights": return map_weightsbased(outputs)
         }
 
-        if (outputs[0] > 0.5 && outputs[2] > 0.5) {
-            /*if (outputs[0] > outputs[2]) turnLeft()
-            else turnRight()*/
-            if (Math.random() > 0.5) turnLeft()
-            else turnRight()
-
-            return movefwd()
-        }
-
-        if (outputs[0] > 0.5) {
-            turnLeft()
-            return movefwd()
-        }
-
-        if (outputs[2] > 0.5) {
-            turnRight()
-            return movefwd()
-        }
-
-        console.log("Staying in place")
         return true
+    }
+
+    function map_weightsbased(outputs) {
+        var max = Math.max(outputs[0], outputs[1], outputs[2])
+        var index = outputs.indexOf(max)
+
+        switch (index) {
+        case 0: turnLeft(); break
+        case 2: turnRight(); break
+        }
+
+        return movefwd()
     }
 
     function movement(dir) {
@@ -371,7 +392,7 @@ Item {
         var input = [getLeft(), getfwd(), getRight()]
         var output = Nfunc.predict(input, weights)
 
-        if (!mapMovement(output)) {
+        if (!mapMovement(output, "weights")) {
             ai_timer.stop()
             console.log("Perp crashed")
         }
@@ -391,7 +412,7 @@ Item {
         var mat = []
         var mat_ = []
         var inputs = []
-        var outputs = []
+        var outputs = trainOutputs.slice()
         var steps = 1000
 
         if (times !== undefined) steps = parseInt(times)
@@ -402,7 +423,6 @@ Item {
         }
 
         inputs = Permute.variant(mat)
-        outputs = Permute.variant(mat_)
 
         weights = Nfunc.train(inputs, outputs, steps, 6)
 

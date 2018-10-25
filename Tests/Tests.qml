@@ -2,7 +2,7 @@ import QtQuick 2.7
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 
-Item {
+Rectangle {
     id: rootTests
     anchors.fill: parent
 
@@ -24,15 +24,27 @@ Item {
         }
     }
 
-    TabBar {
-        id: tabbar
+    RowLayout {
         width: parent.width
-        currentIndex: 2
         anchors.bottom: parent.bottom
 
-        Repeater {
-            model: ["Simple", "Addnetwork", "Grid"]
-            TabButton { text: modelData }
+        Button {
+            text: "Back"
+            Layout.fillHeight: true
+            Layout.preferredHeight: 32
+            Layout.preferredWidth: 96
+            onClicked: rootTests.visible = false
+        }
+
+        TabBar {
+            id: tabbar
+            currentIndex: 2
+            Layout.fillWidth: true
+
+            Repeater {
+                model: ["Simple", "Addnetwork", "Grid"]
+                TabButton { text: modelData }
+            }
         }
     }
 }

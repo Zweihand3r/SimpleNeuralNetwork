@@ -10,7 +10,7 @@ Item {
     property var outputs: []
     property var weights_1: []
     property var weights_2: []
-    property int trainSteps: 100000
+    property int trainSteps: 1000
 
     Rectangle {
         anchors { fill: parent; rightMargin: parent.width - 240 }
@@ -19,52 +19,57 @@ Item {
         ColumnLayout {
             anchors { fill: parent; margins: 20 }
 
-            Button {
-                text: "Normalize Test"
-                Layout.fillWidth: true
+            Repeater {
+                model: ["Normalize Test", "Add Net Test"]
 
-                onClicked: {
-                    var array = [0, 23, 55, 23, 54, 23, 10, 23, 54, 100]
-                    console.log(normalize(array))
-                }
-            }
+                Button {
+                    text: modelData
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
 
-            Button {
-                text: "Add Net Test"
-                Layout.fillWidth: true
+                    onClicked: {
+                        switch (modelData) {
+                        case "Normalize Test":
+                            var array = [0, 23, 55, 23, 54, 23, 10, 23, 54, 100]
+                            console.log(normalize(array))
+                            break
 
-                onClicked: {
-                    var array_A = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
-                    var array_B = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
-                    var array_Sum = []
-                    for (var index in array_A) array_Sum.push(array_A[index] + array_B[index])
+                        case "Add Net Test":
+                            var array_A = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
+                            var array_B = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
+                            var array_Sum = []
+                            for (var index in array_A) array_Sum.push(array_A[index] + array_B[index])
 
-                    var normalized_A = normalize(array_A)
-                    var normalized_B = normalize(array_B)
-                    var normalized_Sum = normalize(array_Sum)
+                            /* for in array causing function() in array */
 
-                    inputs = []
-                    outputs = []
-                    for (index in normalized_A) {
-                        inputs.push([normalized_A[index], normalized_B[index]])
-                        outputs.push([normalized_Sum[index]])
-                    }
+                            var normalized_A = normalize(array_A)
+                            var normalized_B = normalize(array_B)
+                            var normalized_Sum = normalize(array_Sum)
 
-                    inputs.forEach(function(inpt) { console.log(inpt) })
-                    outputs.forEach(function(otpt) { console.log(otpt) })
-//                    outputs.forEach(function(otpt) { console.log(getFromNormalised(otpt, array_Sum)) })
+                            inputs = []
+                            outputs = []
+                            for (index in normalized_A) {
+                                console.log("normalisedA" + normalized_A[index])
+                                inputs.push([normalized_A[index], normalized_B[index]])
+                                outputs.push([normalized_Sum[index]])
+                            }
 
-                    train_2Layer()
+                            printArray(inputs, "Inputs")
+                            printArray(outputs, "Outputs")
 
-                    var a = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
-                    var b = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
+                            train_2Layer()
 
-                    for (index in a) {
-                        var input = [[getNormalised(a[index], array_A), getNormalised(b[index], array_B)]]
-                        var l1 = sigmoid(Matrix.dot(input, weights_1))
-                        var l2 = sigmoid(Matrix.dot(l1, weights_2))
+                            var a = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
+                            var b = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
 
-                        console.log(a[index] + " + " + b[index] + " = " + (a[index] + b[index]) + " | " + getFromNormalised(l2, array_Sum))
+                            for (index in a) {
+                                var input = [[getNormalised(a[index], array_A), getNormalised(b[index], array_B)]]
+                                var l1 = sigmoid(Matrix.dot(input, weights_1))
+                                var l2 = sigmoid(Matrix.dot(l1, weights_2))
+
+                                console.log(a[index] + " + " + b[index] + " = " + (a[index] + b[index]) + " | " + getFromNormalised(l2, array_Sum))
+                            }
+                        }
                     }
                 }
             }
