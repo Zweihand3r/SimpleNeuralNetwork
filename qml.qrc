@@ -18,5 +18,8 @@
         <file>Tests/Tests.qml</file>
         <file>Tests/Grid_.qml</file>
         <file>Tests/Toggle.qml</file>
+        <file>qml/Content.qml</file>
+        <file>qml/SharedComponents/TrainButton.qml</file>
+        <file>qml/SharedComponents/Button_.qml</file>
     </qresource>
 </RCC>
