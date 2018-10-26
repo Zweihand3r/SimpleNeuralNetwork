@@ -13,11 +13,11 @@ Item {
     property int trainSteps: 1000
 
     Rectangle {
-        anchors { fill: parent; rightMargin: parent.width - 240 }
+        anchors { fill: parent; rightMargin: parent.width - 180 }
         color: "#000000"
 
         ColumnLayout {
-            anchors { fill: parent; margins: 20 }
+            anchors { left: parent.left; top: parent.top; right: parent.right; margins: 8 }
 
             Repeater {
                 model: ["Normalize Test", "Add Net Test"]
@@ -26,6 +26,7 @@ Item {
                     text: modelData
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
+                    Layout.preferredHeight: 32
 
                     onClicked: {
                         switch (modelData) {
@@ -38,7 +39,10 @@ Item {
                             var array_A = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
                             var array_B = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
                             var array_Sum = []
-                            for (var index in array_A) array_Sum.push(array_A[index] + array_B[index])
+
+                            for (var index = 0; index < array_A.length; index++) {
+                                array_Sum.push(array_A[index] + array_B[index])
+                            }
 
                             /* for in array causing function() in array */
 
@@ -48,7 +52,7 @@ Item {
 
                             inputs = []
                             outputs = []
-                            for (index in normalized_A) {
+                            for (index = 0; index < normalized_A.length; index++) {
                                 console.log("normalisedA" + normalized_A[index])
                                 inputs.push([normalized_A[index], normalized_B[index]])
                                 outputs.push([normalized_Sum[index]])
@@ -62,7 +66,7 @@ Item {
                             var a = [1, 14, 55, 73, 54, 23, 10, 26, 64, 85]
                             var b = [21, 28, 93, 2, 74, 52, 32, 77, 12, 5]
 
-                            for (index in a) {
+                            for (index = 0; index < a.length; index++) {
                                 var input = [[getNormalised(a[index], array_A), getNormalised(b[index], array_B)]]
                                 var l1 = sigmoid(Matrix.dot(input, weights_1))
                                 var l2 = sigmoid(Matrix.dot(l1, weights_2))

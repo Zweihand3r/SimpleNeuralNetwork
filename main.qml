@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 import FileManager 1.1
 
-import './qml/Switches'
+import './qml'
 import './Tests'
 
 ApplicationWindow {
@@ -13,7 +13,7 @@ ApplicationWindow {
     height: 480
     title: qsTr("Simple Neural Network")
 
-    property int selectionIndexOnLoad: -1
+    property string selectIndexOnLoad: "Tests"
 
     Component.onCompleted: componentLoaded()
 
@@ -23,19 +23,19 @@ ApplicationWindow {
         id: fileManager
     }
 
-    RowLayout {
+    ColumnLayout {
         id: menu
         anchors.centerIn: parent
 
-        property int selectionIndex
+        property string selectedItem
 
         Repeater {
-            model: ["Tests", "Switches"]
+            model: ["Content", "Tests"]
             delegate: MouseArea {
-                Layout.preferredWidth: 180
+                Layout.preferredWidth: 240
                 Layout.preferredHeight: 90
                 hoverEnabled: true; clip: true
-                onClicked: clickHandler(index, mouseX, mouseY)
+                onClicked: clickHandler(mouseX, mouseY)
 
                 Rectangle {
                     anchors { fill: parent; margins: 8 } radius: 6
@@ -60,23 +60,23 @@ ApplicationWindow {
                     OpacityAnimator { target: clickIndicator; from: 1; to: 0; duration: 360; easing.type: Easing.InQuart }
                 }
 
-                function clickHandler(index, mouseX, mouseY) {
-                    menu.selectionIndex = index
+                function clickHandler(mouseX, mouseY) {
+                    menu.selectedItem = buttonText.text
 
-                    clickIndicator.anchors.horizontalCenterOffset = mouseX - 120
-                    clickIndicator.anchors.verticalCenterOffset = mouseY - 60
+                    clickIndicator.anchors.horizontalCenterOffset = mouseX - (width / 2)
+                    clickIndicator.anchors.verticalCenterOffset = mouseY - (height / 2)
                     clickIndicator.visible = true
                     clickAnim.start()
                 }
             }
         }
 
-        function selectionHandler(index) {
-            if (index === undefined) index = selectionIndex
+        function selectionHandler(item) {
+            if (item === undefined) item = selectedItem
 
-            switch (index) {
-            case 0: tests.visible = true; break
-            case 1: switches.visible = true; break
+            switch (item) {
+            case "Tests": tests.visible = true; break
+            case "Content": content.visible = true; break
             }
         }
     }
@@ -86,15 +86,14 @@ ApplicationWindow {
         visible: false
     }
 
-    Switches {
-        id: switches
+    Content {
+        id: content
         visible: false
     }
 
     function componentLoaded() {
-        if (selectionIndexOnLoad >= 0) {
-            menu.selectionHandler(selectionIndexOnLoad)
-        }
+        if (selectIndexOnLoad !== undefined)
+            menu.selectionHandler(selectIndexOnLoad)
     }
 
     function printArray(arr, title) {

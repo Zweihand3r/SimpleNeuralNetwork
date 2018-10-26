@@ -51,6 +51,26 @@ function train(inputs, outputs, steps, nodes) {
     return weights
 }
 
+function trainStep(inputs, outputs, weights, nodeCount) {
+    var weights_1 = weights[0]
+    var weights_2 = weights[1]
+
+    var l0 = inputs
+    var l1 = sigmoid(dot(l0, weights_1))
+    var l2 = sigmoid(dot(l1, weights_2))
+
+    var l2_error = subtract(outputs, l2)
+
+    var l2_delta = multiply(l2_error, sigmoidDerivative(l2))
+    var l1_error = dot(l2_delta, transpose(weights_2))
+    var l1_delta = multiply(l1_error, sigmoidDerivative(l1))
+
+    weights_2 = add(weights_2, dot(transpose(l1), l2_delta))
+    weights_1 = add(weights_1, dot(transpose(l0), l1_delta))
+
+    return [weights_1, weights_2]
+}
+
 function predict(inputs, weights) {
     var weights_1 = weights[0]
     var weights_2 = weights[1]
@@ -97,6 +117,19 @@ function random(rows, cols) {
         res.push(arr)
     }
     return res
+}
+
+function initializeWeights(type, inputCount, outputCount, nodeCount) {
+    if (type === undefined) type = "random"
+
+    switch (type) {
+    case "random":
+        var weights_1 = random(inputCount, nodeCount)
+        var weights_2 = random(nodeCount, outputCount)
+        break
+    }
+
+    return [weights_1, weights_2]
 }
 
 function printArray(arr, title) {
