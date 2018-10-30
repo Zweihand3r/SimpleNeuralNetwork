@@ -2,22 +2,119 @@ import QtQuick 2.7
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 import './Scripts/Matrix.js' as Matrix
+import '../js/NeuralFunctions.js' as Nef
 
 Item {
     anchors.fill: parent
 
     property var inputs: []
     property var outputs: []
+    property var weights: []
     property var weights_1: []
     property var weights_2: []
-    property int trainSteps: 1000
+    property int trainSteps: parseInt(testStepTf.text)
+
+    property int loopIndex: 0
+
+    property int maxLoops: parseInt(testLoopsTf.text)
+    property int stepsTrained: 0
+
+    property int min: 0
+    property int max: 100
+
+    property bool useSavedWeights: true
+    property bool randomiseInputs: true
+
+    property var logs: []
 
     Rectangle {
         anchors { fill: parent; rightMargin: parent.width - 180 }
-        color: "#000000"
+        color: "#FFFFFF"
+
+        Rectangle {
+            width: 2; height: parent.height
+            anchors { left: parent.right }
+            color: "black"
+        }
 
         ColumnLayout {
             anchors { left: parent.left; top: parent.top; right: parent.right; margins: 8 }
+
+            CheckBox {
+                Layout.fillWidth: true
+                text: "Saved weights"
+                checked: true
+                onCheckedChanged: useSavedWeights = checked
+            }
+
+            CheckBox {
+                Layout.fillWidth: true
+                text: "Randomise Inputs"
+                checked: true
+                onCheckedChanged: randomiseInputs = checked
+            }
+
+            Repeater {
+                model: ["Initialize", "Train", "Generate Random Additions"]
+
+                Button {
+                    text: modelData
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
+                    Layout.preferredHeight: 32
+
+                    onClicked: {
+                        switch (text) {
+                        case "Initialize": initialize(); break
+                        case "Train": train(); break
+                        case "Generate Random Additions": generateRandom(); break
+                        }
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    text: "Train Steps:"
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                TextField {
+                    id: testStepTf
+                    text: "1000"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    validator: RegExpValidator { regExp: /[0-9]+/ }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Text {
+                    text: "Train Loops:"
+                    Layout.alignment: Qt.AlignVCenter
+                }
+
+                TextField {
+                    id: testLoopsTf
+                    text: "10"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 32
+                    validator: RegExpValidator { regExp: /[0-9]+/ }
+                }
+            }
+
+            Rectangle {
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: 2; color: "black"
+            }
+
+            Text {
+                text: "Tests"
+            }
 
             Repeater {
                 model: ["Normalize Test", "Add Net Test"]
@@ -80,6 +177,170 @@ Item {
         }
     }
 
+    Item {
+        anchors { fill: parent; leftMargin: 180 }
+
+        Text {
+            id: mainText
+            anchors.centerIn: parent
+            font.pixelSize: 21
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+
+    Item {
+        anchors.fill: parent
+        visible: trainTimer.running
+
+        Rectangle {
+            anchors.fill: parent
+            color: "black"; opacity: 0.95
+
+            ProgressBar {
+                anchors.centerIn: parent
+                from: 0; to: maxLoops; value: loopIndex
+            }
+        }
+    }
+
+    Timer {
+        id: trainTimer
+        repeat: true
+        interval: 10
+        onTriggered: trainLoop()
+    }
+
+    function initialize() {
+        weights = Nef.initializeWeights("random", 2, 1, 4)
+
+        loopIndex = 0
+        stepsTrained = 0
+        logs = []
+    }
+
+    function train() {
+        if (weights.length === 0) {
+            console.log("Weights not initialized")
+            return
+        }
+
+        loopIndex = 0
+        var arr_a = []
+        var arr_b = []
+        var arr_c = []
+
+        console.log("Actual Values for session " + loopIndex)
+        for (var index = 0; index < 10; index++) {
+            var a = parseInt(Math.random() * 100)
+            var b = parseInt(Math.random() * 100)
+
+            console.log(a + " + " + b + " = " + (a + b))
+
+            arr_a.push(_normalize(a, min, max))
+            arr_b.push(_normalize(b, min, max))
+            arr_c.push(_normalize(a + b, min, max * 2))
+        }
+
+        inputs = []
+        outputs = []
+        for (index = 0; index < arr_a.length; index++) {
+            inputs.push([arr_a[index], arr_b[index]])
+            outputs.push([arr_c[index]])
+        }
+
+        initializeLoop()
+        trainTimer.start()
+    }
+
+    function initializeLoop() {
+        var a = 0
+        var b = 0
+        var arr_a = []
+        var arr_b = []
+        var arr_c = []
+
+        if (randomiseInputs) {
+            console.log("Actual Values for loop " + loopIndex)
+            for (var index = 0; index < 10; index++) {
+                a = parseInt(Math.random() * 100)
+                b = parseInt(Math.random() * 100)
+
+                console.log(a + " + " + b + " = " + (a + b))
+
+                arr_a.push(_normalize(a, min, max))
+                arr_b.push(_normalize(b, min, max))
+                arr_c.push(_normalize(a + b, min, max * 2))
+            }
+
+            inputs = []
+            outputs = []
+            for (index = 0; index < arr_a.length; index++) {
+                inputs.push([arr_a[index], arr_b[index]])
+                outputs.push([arr_c[index]])
+            }
+        }
+
+        printArray(inputs, "Inputs")
+        printArray(outputs, "Outputs")
+    }
+
+    function trainLoop() {
+        if (loopIndex < maxLoops) {
+            weights = Nef.trainBatch(inputs, outputs, weights, trainSteps, 4)
+
+            loopIndex += 1
+
+            logWeights()
+            initializeLoop()
+        }
+        else {
+            trainTimer.stop()
+
+            var actualValues = []
+            for (var index = 0; index < 10; index++) {
+                actualValues.push(log_a[index] + log_b[index])
+            }
+        }
+    }
+
+    function _normalize(number, min, max) {
+        return (number - min) / (max - min)
+    }
+
+    function _deNormalize(normalized, min, max) {
+        return (normalized * (max - min)) + min
+    }
+
+    function logWeights() {
+        logs.push(weights)
+    }
+
+    function logResult() {
+    }
+
+    function generateRandom() {
+        if (weights.length === 0) {
+            console.log("Weights not initialized")
+            return
+        }
+
+        mainText.text = ""
+
+        for (var index = 0; index < 10; index++) {
+            var a = parseInt(Math.random() * 100)
+            var b = parseInt(Math.random() * 100)
+            var inputs = [_normalize(a, min, max), _normalize(b, min, max)]
+            var res_normal = Nef.predict(inputs, weights)
+            var res = _deNormalize(res_normal, min, max * 2)
+
+            mainText.text += (a + " + " + b + " = " + (a + b) + " | " + res + "\n")
+        }
+    }
+
+
+    /* Testing */
+
     function train_2Layer(nodecount) {
         console.log("Training 2 Layer...")
         if (nodecount === undefined) nodecount = 4
@@ -100,6 +361,8 @@ Item {
 
             weights_2 = Matrix.add(weights_2, Matrix.dot(Matrix.transpose(l1), l2_delta))
             weights_1 = Matrix.add(weights_1, Matrix.dot(Matrix.transpose(l0), l1_delta))
+
+            console.log("Trained step: " + (index + 1))
         }
         console.log("Training 2 Layer complete")
     }

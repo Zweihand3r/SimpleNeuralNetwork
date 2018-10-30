@@ -24,7 +24,7 @@ public:
 signals:
 
 public slots:
-    void saveFile(const QString string, const QString path);
+    void saveFile(const QString string, const QString path, const QString fileName);
     QString loadFile(const QString path);
     QString getPath(DefaultDirectories dir);
 };
