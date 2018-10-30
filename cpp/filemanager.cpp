@@ -5,12 +5,12 @@ FileManager::FileManager(QObject *parent) : QObject(parent)
 
 }
 
-void FileManager::saveFile(const QString string, const QString path)
+void FileManager::saveFile(const QString string, const QString path, const QString fileName)
 {
     QDir dir(path);
     if (!dir.exists()) dir.mkpath(".");
 
-    QFile file(path);
+    QFile file(path + "/" + fileName);
     if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         QTextStream textStream;
         textStream.setDevice(&file);
