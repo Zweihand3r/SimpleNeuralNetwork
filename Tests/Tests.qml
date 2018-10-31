@@ -10,7 +10,7 @@ Rectangle {
 
     StackLayout {
         id: stackLt
-        anchors.fill: parent
+        anchors { fill: parent; bottomMargin: rowLt.height }
         currentIndex: tabbar.currentIndex
 
         Simple {
@@ -27,6 +27,7 @@ Rectangle {
     }
 
     RowLayout {
+        id: rowLt
         width: parent.width
         anchors.bottom: parent.bottom
 
