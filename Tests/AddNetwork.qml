@@ -1,6 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
+import QtCharts 2.1
+
 import './Scripts/Matrix.js' as Matrix
 import '../js/NeuralFunctions.js' as Nef
 
@@ -190,6 +192,52 @@ Item {
     }
 
     Item {
+        id: chartFrame
+        anchors { fill: parent; leftMargin: 180 }
+
+        ChartView {
+            id: chartView
+            anchors { fill: parent }
+            theme: ChartView.ChartThemeBlueIcy
+            antialiasing: true
+
+            LineSeries {
+                id: lineSeries
+                name: "LineSeries"
+                XYPoint { x: 0; y: 0 }
+                XYPoint { x: 1.1; y: 2.1 }
+                XYPoint { x: 1.9; y: 3.3 }
+                XYPoint { x: 2.1; y: 2.1 }
+                XYPoint { x: 2.9; y: 4.9 }
+                XYPoint { x: 3.4; y: 3.0 }
+                XYPoint { x: 4.1; y: 3.3 }
+            }
+        }
+
+        RowLayout {
+            anchors { bottom: parent.bottom }
+
+            Button {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                padding: 0
+                text: "+"
+
+                onClicked: chartView.zoomIn()
+            }
+
+            Button {
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                padding: 0
+                text: "-"
+
+                onClicked: chartView.zoomOut()
+            }
+        }
+    }
+
+    Item {
         anchors.fill: parent
         visible: trainTimer.running
 
@@ -297,10 +345,9 @@ Item {
         else {
             trainTimer.stop()
 
-            var actualValues = []
-            for (var index = 0; index < 10; index++) {
-                actualValues.push(log_a[index] + log_b[index])
-            }
+            console.log("29 + 65 = " + (29 + 65))
+            var res = logResult(29, 65)
+            printArray(res, "Log Results")
         }
     }
 
@@ -316,7 +363,25 @@ Item {
         logs.push(weights)
     }
 
-    function logResult() {
+    function logResult(a, b) {
+        var results = []
+        var a_norm = _normalize(a, min, max)
+        var b_norm = _normalize(b, min, max)
+        var loopIndex = maxLoops
+
+        lineSeries.clear()
+
+        logs.forEach(function(weights) {
+            var res_norm = Nef.predict([a_norm, b_norm], weights)
+            var res = _deNormalize(res_norm, min, max * 2)
+
+            lineSeries.append(loopIndex, res)
+            loopIndex += maxLoops
+
+            results.push(res)
+        })
+
+        return results
     }
 
     function generateRandom() {
