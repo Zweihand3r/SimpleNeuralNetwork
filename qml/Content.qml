@@ -8,7 +8,8 @@ Item {
     width: windowWidth
     height: windowHeight
 
-    property int windowWidth: 640
+    /* 16:9 */
+    property int windowWidth: 853
     property int windowHeight: 480
 
     Rectangle {

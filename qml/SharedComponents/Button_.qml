@@ -2,8 +2,8 @@ import QtQuick 2.7
 
 MouseArea {
     id: button_
-    implicitWidth: 240
-    implicitHeight: 90
+    implicitWidth: 144
+    implicitHeight: 36
     hoverEnabled: true; clip: true
     onClicked: clickHandler(mouseX, mouseY)
 
@@ -14,21 +14,21 @@ MouseArea {
 
     property int borderWidth: 2
     property int contentMargin: 4
-    property int fontSize: 34
-    property int radius: 4
-    property int innerRadius: 8
+    property int fontSize: height / 2
+    property int radius: 8
+    property int innerRadius: 4
 
     property int paintedWidth: { return buttonText.paintedWidth }
 
-    signal clickDelay()
+    signal delayedClick()
 
     Rectangle {
-        anchors { fill: parent; margins: contentMargin } radius: parent.radius
+        anchors { fill: parent; margins: contentMargin } radius: innerRadius
         color: accentColor; opacity: parent.containsMouse ? 1 : 0
         Behavior on opacity { OpacityAnimator { duration: 120 } }
     }
     Rectangle { id: clickIndicator; visible: false; color: backgroundColor; radius: width / 2 ; anchors.centerIn: parent }
-    Rectangle { anchors.fill: parent; radius: innerRadius; color: "#00000000"; border { color: accentColor; width: borderWidth } }
+    Rectangle { anchors.fill: parent; radius: parent.radius; color: "#00000000"; border { color: accentColor; width: borderWidth } }
 
     Text {
         id: buttonText; anchors.fill: parent; text: button_.text ; font.pixelSize: fontSize
@@ -39,7 +39,7 @@ MouseArea {
 
     ParallelAnimation {
         id: clickAnim
-        onStopped: { clickIndicator.visible = false; button_.clickDelay() }
+        onStopped: { clickIndicator.visible = false; button_.delayedClick() }
         NumberAnimation { target: clickIndicator; property: "width"; from: 0; to: width * 1.2; duration: 360 }
         NumberAnimation { target: clickIndicator; property: "height"; from: 0; to: width * 1.2; duration: 360 }
         OpacityAnimator { target: clickIndicator; from: 1; to: 0; duration: 360; easing.type: Easing.InQuart }
