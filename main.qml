@@ -9,11 +9,11 @@ import './Tests'
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
+    width: content.windowWidth
+    height: content.windowHeight
     title: qsTr("Simple Neural Network")
 
-    property string selectIndexOnLoad: "Tests"
+    property string selectContentOnLoad: "Content"
 
     Component.onCompleted: componentLoaded()
 
@@ -92,8 +92,8 @@ ApplicationWindow {
     }
 
     function componentLoaded() {
-        if (selectIndexOnLoad !== undefined)
-            menu.selectionHandler(selectIndexOnLoad)
+        if (selectContentOnLoad !== undefined)
+            menu.selectionHandler(selectContentOnLoad)
     }
 
     function printArray(arr, title) {

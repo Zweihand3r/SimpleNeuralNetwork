@@ -26,8 +26,8 @@ Item {
 
     Flickable {
         anchors {
-            left: parent.left; right: parent.right; top: parent.top; bottom: controls.top
-            leftMargin: 20; rightMargin: 20; topMargin: 20; bottomMargin: 8
+            right: controls.left; left: parent.left; top: parent.top; bottom: controls.top
+            rightMargin: 20; leftMargin: 20; topMargin: 20; bottomMargin: 20
         }
 
         contentWidth: parent.width; contentHeight: column.height
@@ -36,10 +36,6 @@ Item {
         ColumnLayout {
             id: column
             spacing: 12
-            anchors {
-                horizontalCenter: parent.horizontalCenter
-                horizontalCenterOffset: -20
-            }
 
             Repeater {
                 id: gridRepeater
@@ -53,45 +49,100 @@ Item {
         }
     }
 
+    Item {
+        id: controlsPanel
+        width: 320
+        anchors {
+            top: parent.top; right: parent.right; bottom: parent.bottom
+            topMargin: 8; rightMargin: 20; bottomMargin: 20
+        }
+
+        TabBar {
+            id: controlsNav
+            width: parent.width
+
+            Repeater {
+                model: ["Controls", "Settings"]
+                TabButton {
+                    height: parent.height
+
+                    contentItem: Text {
+                        text: modelData
+                    }
+
+                    background: Item {
+
+                        Canvas {
+                            anchors.fill: parent
+                            onPaint: {
+                                var ctx = getContext("2d")
+                                ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
+                                ctx.fillRect(0, 0, width, height);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#00000000"; radius: 8
+            border { width: 2; color: "#FFFFFF" }
+        }
+
+        ColumnLayout {
+            anchors { left: parent.left; top: controlsNav.bottom; right: parent.right; margins: 8 }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: "Steps trained: " + totalStepsTrained
+                font.pixelSize: 17; color: "#FFFFFF"
+            }
+
+            Button_Dropdown {
+                text: "Input Count"
+                Layout.fillWidth: true
+                dropdownItems: ["Two", "Three", "Four"]
+            }
+
+            Button_Dropdown {
+                text: "Output Count"
+                Layout.fillWidth: true
+                dropdownItems: ["One", "Two", "Three"]
+            }
+        }
+    }
+
     ColumnLayout {
         id: controls; anchors {
             bottomMargin: 8; bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
 
-        Text {
-            Layout.alignment: Qt.AlignHCenter
-            text: "Steps trained: " + totalStepsTrained
-            font.pixelSize: 17; color: "#FFFFFF"
-        }
-
         RowLayout {
+//            visible: false
             Button_ {
                 Layout.preferredHeight: 36
                 Layout.preferredWidth: 64
                 fontSize: 17; text: "Test"
-//                visible: false
-                onClickDelay: test()
             }
 
             Button_ {
                 Layout.preferredHeight: 36
                 Layout.preferredWidth: 164
                 fontSize: 17; text: "Train " + trainBatchCount + " steps"
-                onClickDelay: trainNetwork()
             }
             Button_ {
                 Layout.preferredHeight: 36
                 Layout.preferredWidth: 144
-                fontSize: 17; text: "Wipe Network"
-                onClickDelay: clearNetwork()
+                fontSize: 17; text: "Wipe Network"                
             }
 
             Button_ {
                 Layout.preferredHeight: 36
                 Layout.preferredWidth: 244
                 fontSize: 17; text: "Compute Network Output"
-                onClickDelay: computeNetworkOutput()
             }
         }
     }
