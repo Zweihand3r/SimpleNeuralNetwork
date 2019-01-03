@@ -9,6 +9,9 @@ RowLayout {
     property color color: "#FFFFFF"
     property color networkOutputColor: "#7666EF"
 
+    property color color_on: color
+    property color color_off: "#656565"
+
     property int switchCount: 3
     property int outputCount: 1
 
@@ -73,7 +76,7 @@ RowLayout {
                     width: parent.width
                     height: parent.width
                     radius: width / 2
-                    color: rootSR.color
+                    color: rootSwitch.switchedOn ? color_on : color_off
 
                     Behavior on y {
                         NumberAnimation { duration: 64; easing.type: Easing.InCubic }
@@ -96,6 +99,7 @@ RowLayout {
                 Layout.preferredWidth: parent.height
                 onClicked: output = !output
                 enabled: checked; visible: selectable
+                opacity: checked ? 1 : 0.5
 
                 property bool output: false
 
@@ -122,6 +126,10 @@ RowLayout {
                     Behavior on opacity {
                         OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
                     }
+                }
+
+                Behavior on opacity {
+                    OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
                 }
             }
         }

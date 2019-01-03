@@ -21,5 +21,8 @@
         <file>qml/Content.qml</file>
         <file>qml/SharedComponents/Button_.qml</file>
         <file>qml/SharedComponents/Button_Dropdown.qml</file>
+        <file>qml/SharedComponents/Button_Tab.qml</file>
+        <file>qml/LoadingScreen.qml</file>
+        <file>qml/Popup_.qml</file>
     </qresource>
 </RCC>

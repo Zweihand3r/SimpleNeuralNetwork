@@ -14,19 +14,21 @@ Item {
     Rectangle { anchors.fill: parent; color: "#000000" }
 
     property int switchCount: 3
-    property int outputCount: 2
+    property int outputCount: 1
 
     property int trainStepIndex: 0
     property int totalStepsTrained: 0
-    property int trainBatchCount: 10000
+    property int trainBatchCount: parseInt(stepsDropdown.currentItem)
 
     property var inputs: []
     property var outputs: []
     property var weights: []
 
+    Component.onCompleted: createGrid()
+
     Flickable {
         anchors {
-            right: controls.left; left: parent.left; top: parent.top; bottom: controls.top
+            right: controlsPanel.left; left: parent.left; top: parent.top; bottom: parent.bottom
             rightMargin: 20; leftMargin: 20; topMargin: 20; bottomMargin: 20
         }
 
@@ -51,104 +53,139 @@ Item {
 
     Item {
         id: controlsPanel
-        width: 320
-        anchors {
+        width: 280; clip: true; anchors {
             top: parent.top; right: parent.right; bottom: parent.bottom
             topMargin: 8; rightMargin: 20; bottomMargin: 20
         }
 
-        TabBar {
-            id: controlsNav
-            width: parent.width
-
-            Repeater {
-                model: ["Controls", "Settings"]
-                TabButton {
-                    height: parent.height
-
-                    contentItem: Text {
-                        text: modelData
-                    }
-
-                    background: Item {
-
-                        Canvas {
-                            anchors.fill: parent
-                            onPaint: {
-                                var ctx = getContext("2d")
-                                ctx.fillStyle = Qt.rgba(1, 0, 0, 1);
-                                ctx.fillRect(0, 0, width, height);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Rectangle {
+        /*Rectangle {
             anchors.fill: parent
             color: "#00000000"; radius: 8
             border { width: 2; color: "#FFFFFF" }
-        }
+        }*/
 
-        ColumnLayout {
-            anchors { left: parent.left; top: controlsNav.bottom; right: parent.right; margins: 8 }
+        Flickable {
+            contentHeight: setConColumn.height; contentWidth: width
+            anchors { left: parent.left; top: parent.top; right: parent.right }
 
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "Steps trained: " + totalStepsTrained
-                font.pixelSize: 17; color: "#FFFFFF"
-            }
+            ColumnLayout {
+                id: setConColumn
+                width: parent.width
 
-            Button_Dropdown {
-                text: "Input Count"
-                Layout.fillWidth: true
-                dropdownItems: ["Two", "Three", "Four"]
-            }
+                Item { Layout.preferredHeight: 1 }
 
-            Button_Dropdown {
-                text: "Output Count"
-                Layout.fillWidth: true
-                dropdownItems: ["One", "Two", "Three"]
-            }
-        }
-    }
+                /* Settings */
 
-    ColumnLayout {
-        id: controls; anchors {
-            bottomMargin: 8; bottom: parent.bottom
-            horizontalCenter: parent.horizontalCenter
-        }
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
 
-        RowLayout {
-//            visible: false
-            Button_ {
-                Layout.preferredHeight: 36
-                Layout.preferredWidth: 64
-                fontSize: 17; text: "Test"
-            }
+                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
 
-            Button_ {
-                Layout.preferredHeight: 36
-                Layout.preferredWidth: 164
-                fontSize: 17; text: "Train " + trainBatchCount + " steps"
-            }
-            Button_ {
-                Layout.preferredHeight: 36
-                Layout.preferredWidth: 144
-                fontSize: 17; text: "Wipe Network"                
-            }
+                    Text {
+                        text: "SETTINGS"; color: "#FFFFFF"
+                        font { pixelSize: 17; bold: true }
+                    }
 
-            Button_ {
-                Layout.preferredHeight: 36
-                Layout.preferredWidth: 244
-                fontSize: 17; text: "Compute Network Output"
+                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+                }
+
+                Button_Dropdown {
+                    id: inputDropdown
+                    text: "Input Count"
+                    Layout.fillWidth: true
+                    currentIndex: 1
+                    dropdownItems: ["Two", "Three", "Four"]
+                }
+
+                Button_Dropdown {
+                    id: outputDropdown
+                    text: "Output Count"
+                    Layout.fillWidth: true
+                    dropdownItems: ["One", "Two", "Three"]
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+
+                    Button_ {
+                        Layout.preferredHeight: 30; Layout.fillWidth: true
+                        text: "Revert"; horizontalAlignment: Text.AlignHCenter
+                        onClicked: {
+                            inputDropdown.setCurrentIndex(switchCount - 2)
+                            outputDropdown.setCurrentIndex(outputCount - 1)
+                        }
+                    }
+
+                    Button_ {
+                        Layout.preferredHeight: 30; Layout.fillWidth: true
+                        text: "Apply"; horizontalAlignment: Text.AlignHCenter
+                        onClicked: loadingScreen.showAnim()
+                    }
+                }
+
+                Item { Layout.preferredHeight: 4 }
+
+                /* Controls */
+
+                RowLayout {
+                    Layout.alignment: Qt.AlignHCenter
+
+                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
+
+                    Text {
+                        text: "CONTROLS"; color: "#FFFFFF"
+                        font { pixelSize: 17; bold: true }
+                    }
+
+                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
+                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+                }
+
+                /*Button_ {
+                    Layout.fillWidth: true
+                    fontSize: 17; text: "Test"
+                }*/
+
+                Button_Dropdown {
+                    id: stepsDropdown
+                    text: "Train Steps"
+                    Layout.fillWidth: true
+                    dropdownItems: ["10", "1000",  "100000", "10000000"]
+                }
+
+                Button_ {
+                    Layout.fillWidth: true
+                    text: "Train Network"
+                    onClicked: trainNetwork()
+                }
+
+                Button_ {
+                    Layout.fillWidth: true
+                    text: "Wipe Network"
+                    onClicked: clearNetwork()
+                }
+
+                Button_ {
+                    Layout.fillWidth: true
+                    text: "Compute Network Output"
+                    onClicked: computeNetworkOutput()
+                }
+
+                Item { Layout.preferredHeight: 1 }
             }
         }
     }
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: forceActiveFocus()
         visible: trainTimer.running
         Rectangle { anchors.fill: parent; opacity: 0.8; color: "#000000" }
@@ -242,10 +279,6 @@ Item {
         for (var index = 0; index < gridRepeater.model; index++) {
             gridRepeater.itemAt(index).setNetworkOutput([0, 0, 0])
         }
-    }
-
-    Component.onCompleted: {
-        createGrid()
     }
 
     function createGrid() {

@@ -34,4 +34,12 @@ Item {
             objectName: "Switches"
         }
     }
+
+    LoadingScreen {
+        id: loadingScreen
+    }
+
+    Popup_ {
+        id: popup
+    }
 }
