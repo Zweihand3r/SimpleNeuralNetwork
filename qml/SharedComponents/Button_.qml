@@ -15,8 +15,10 @@ MouseArea {
     property int borderWidth: 2
     property int contentMargin: 4
     property int fontSize: height / 2
-    property int radius: 8
-    property int innerRadius: 4
+    property int radius: 4
+    property int innerRadius: 2
+
+    property int horizontalAlignment: Text.AlignLeft
 
     property int paintedWidth: { return buttonText.paintedWidth }
 
@@ -33,7 +35,8 @@ MouseArea {
     Text {
         id: buttonText; anchors.fill: parent; text: button_.text ; font.pixelSize: fontSize
         color: parent.containsMouse ? backgroundColor : accentColor; wrapMode: Text.WordWrap
-        verticalAlignment: Text.AlignVCenter; horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter; horizontalAlignment: button_.horizontalAlignment
+        leftPadding: 12; rightPadding: 12
         Behavior on color { ColorAnimation { duration: 120 }}
     }
 

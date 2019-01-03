@@ -13,6 +13,7 @@ MouseArea {
     property color backgroundColor: "#000000"
 
     property string text: "Button"
+    property string currentItem: { return dropdownItems[currentIndex] }
 
     property int currentIndex: 0
     property int buttonHeight: 36
