@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
-import '../SharedComponents'
+import '../Controls'
 
 Flickable {
     id: rootSwitchPanel
@@ -13,8 +13,6 @@ Flickable {
     ColumnLayout {
         id: setConColumn
         width: parent.width
-
-        Item { Layout.preferredHeight: 1 }
 
         /* Settings */
 

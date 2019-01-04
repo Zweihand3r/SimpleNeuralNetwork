@@ -13,15 +13,35 @@ ApplicationWindow {
     height: content.windowHeight
     title: qsTr("Simple Neural Network")
 
-    property string selectContentOnLoad: "Content"
-
-    Component.onCompleted: componentLoaded()
-
     /* UI */
 
     FileManager {
         id: fileManager
     }
+
+    Tests {
+        id: tests
+        visible: false
+    }
+
+    Content {
+        id: content
+//        visible: false
+    }
+
+    function printArray(arr, title) {
+        if (title) { console.log(title) }
+        arr.forEach(function(item) {
+            console.log(item)
+        })
+    }
+
+
+    /* ------------ Redundant ------------- */
+
+    /*property string selectContentOnLoad: "Content"
+
+    Component.onCompleted: componentLoaded()
 
     ColumnLayout {
         id: menu
@@ -81,25 +101,8 @@ ApplicationWindow {
         }
     }
 
-    Tests {
-        id: tests
-        visible: false
-    }
-
-    Content {
-        id: content
-        visible: false
-    }
-
     function componentLoaded() {
         if (selectContentOnLoad !== undefined)
             menu.selectionHandler(selectContentOnLoad)
-    }
-
-    function printArray(arr, title) {
-        if (title) { console.log(title) }
-        arr.forEach(function(item) {
-            console.log(item)
-        })
-    }
+    }*/
 }

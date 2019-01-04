@@ -19,12 +19,15 @@
         <file>Tests/Grid_.qml</file>
         <file>Tests/Toggle.qml</file>
         <file>qml/Content.qml</file>
-        <file>qml/SharedComponents/Button_.qml</file>
-        <file>qml/SharedComponents/Button_Dropdown.qml</file>
-        <file>qml/SharedComponents/Button_Tab.qml</file>
         <file>qml/LoadingScreen.qml</file>
         <file>qml/Popup_.qml</file>
         <file>qml/Switches/SwitchPanel.qml</file>
-        <file>qml/SharedComponents/ProgressBar_.qml</file>
+        <file>qml/Menu.qml</file>
+        <file>qml/Controls/Button_.qml</file>
+        <file>qml/Controls/Button_Dropdown.qml</file>
+        <file>qml/Controls/Button_Tab.qml</file>
+        <file>qml/Controls/Image_.qml</file>
+        <file>qml/Controls/ProgressBar_.qml</file>
+        <file>qml/Components/MenuButton.qml</file>
     </qresource>
 </RCC>
