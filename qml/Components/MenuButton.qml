@@ -2,7 +2,7 @@ import QtQuick 2.7
 
 Item {
     id: rootMbt
-    width: 50; height: 44
+    width: 48; height: 44
 
     property bool presented: false
 
