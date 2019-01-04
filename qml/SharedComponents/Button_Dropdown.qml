@@ -9,8 +9,8 @@ MouseArea {
 
     property var dropdownItems: ["First", "Second", "Third"]
 
-    property color accentColor: "#FFFFFF"
-    property color backgroundColor: "#000000"
+    property color col_accent: "#FFFFFF"
+    property color col_bg: "#000000"
 
     property string text: "Button"
     property string currentItem: { return dropdownItems[currentIndex] }
@@ -38,7 +38,7 @@ MouseArea {
     Behavior on implicitHeight { NumberAnimation { duration: 120; easing.type: Easing.InCubic } }
 
     Rectangle {
-        border { color: accentColor; width: borderWidth }
+        border { color: col_accent; width: borderWidth }
         anchors.fill: parent; radius: parent.radius; color: "#00000000"
     }
 
@@ -48,13 +48,13 @@ MouseArea {
 
         Text {
             id: buttonText; text: button_dd.text ; font.pixelSize: fontSize
-            color: accentColor; wrapMode: Text.WordWrap; horizontalAlignment: Text.AlignLeft
+            color: col_accent; wrapMode: Text.WordWrap; horizontalAlignment: Text.AlignLeft
             Layout.alignment: Qt.AlignVCenter; Layout.fillWidth: true; leftPadding: 12
         }
 
         Text {
             id: selectedText; text: dropdownItems[currentIndex]
-            color: accentColor; horizontalAlignment: Text.AlignRight; font.pixelSize: fontSize
+            color: col_accent; horizontalAlignment: Text.AlignRight; font.pixelSize: fontSize
             Layout.alignment: Qt.AlignVCenter; Layout.fillWidth: true; rightPadding: 12
         }
     }
@@ -75,14 +75,14 @@ MouseArea {
 
                 Rectangle {
                     anchors { fill: parent; leftMargin: 4; rightMargin: 4 }
-                    radius: 2; color: accentColor; opacity: parent.containsMouse ? 1 : 0
+                    radius: 2; color: col_accent; opacity: parent.containsMouse ? 1 : 0
                     Behavior on opacity { OpacityAnimator { duration: 120 } }
                 }
 
                 Text {
                     anchors { fill: parent; rightMargin: 12 }
                     text: modelData ; font.pixelSize: fontSize
-                    color: parent.containsMouse ? backgroundColor : accentColor
+                    color: parent.containsMouse ? col_bg : col_accent
                     horizontalAlignment: Text.AlignRight; verticalAlignment: Text.AlignVCenter
                     Behavior on color { ColorAnimation { duration: 120 }}
                 }
