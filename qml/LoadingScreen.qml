@@ -8,24 +8,25 @@ Item {
     visible: false
 
     property int coverCount: 20
+    property int slideDuration: 360
 
     property bool disableAnim: false
+
+    property Item caller: dummyCaller
+    property string complete_action: ""
 
     MouseArea { anchors.fill: parent; hoverEnabled: true; onClicked: forceActiveFocus() }
 
     ColumnLayout {
-        spacing: 0
-        anchors { fill: parent }
+        spacing: 0; anchors { fill: parent }
 
         Repeater {
             id: coverRep
             model: coverCount
 
             Item {
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: 12
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                Layout.fillWidth: true; Layout.fillHeight: true
+                Layout.preferredWidth: parent.width; Layout.preferredHeight: 12
 
                 property int animX: 0
 
@@ -33,12 +34,11 @@ Item {
                     x: parent.animX
                     width: parent.width
                     height: parent.height
-
-//                    color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+                    color: col_prim
 
                     Behavior on x {
                         enabled: !disableAnim
-                        NumberAnimation { duration: 240; easing.type: Easing.InCurve }
+                        NumberAnimation { duration: slideDuration; easing.type: Easing.InCurve }
                     }
                 }
             }
@@ -48,15 +48,29 @@ Item {
     Timer {
         property int index: 0
         property bool showing: true
-        property bool filled: false
 
         id: animTimer
-        repeat: true
-        interval: 20
+        repeat: true; interval: 20
         onTriggered: animLoop()
     }
 
-    function showAnim() {
+    Timer {
+        id: animCompletionTimer
+        repeat: false; interval: slideDuration
+        onTriggered: animCompletion()
+    }
+
+    Item { id: dummyCaller }
+
+    function present(data) {
+        /*data = {
+            "caller": <Calling item (Item derivative)>,
+            "complete_action": <Function to call on complete>
+        }*/
+
+        caller = data.caller
+        complete_action = data.complete_action
+
         disableAnim = true
 
         for (var index = 0; index < coverCount; index++) {
@@ -75,14 +89,51 @@ Item {
         animTimer.start()
     }
 
+    function dismiss(data) {
+        if (data === undefined) {
+            caller = dummyCaller
+            complete_action = ""
+        } else {
+            caller = data.caller
+            complete_action = data.complete_action
+        }
+
+        animTimer.showing = false
+
+        animTimer.index = 0
+        animTimer.start()
+    }
+
     function animLoop() {
-        if (animTimer.showing) {
-            if (animTimer.index < coverCount) {
-                coverRep.itemAt(animTimer.index).animX = 0
+        if (animTimer.index < coverCount) {
+            if (animTimer.showing) coverRep.itemAt(animTimer.index).animX = 0
+            else {
+                if (animTimer.index % 2 === 0) {
+                    coverRep.itemAt(animTimer.index).animX = -width
+                } else {
+                    coverRep.itemAt(animTimer.index).animX = width
+                }
             }
 
             animTimer.index += 1
         }
-        else animTimer.stop()
+        else {
+            animTimer.stop()
+
+            /* Anim completion */
+            animCompletionTimer.start()
+        }
+    }
+
+    function animCompletion() {
+        if (!animTimer.showing) {
+            console.log("LoadingScreen.qml: dismiss complete")
+            visible = false
+        } else {
+            console.log("LoadingScreen.qml: present complete")
+        }
+
+        if (complete_action.length > 0)
+            caller[complete_action]()
     }
 }

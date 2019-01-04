@@ -24,5 +24,7 @@
         <file>qml/SharedComponents/Button_Tab.qml</file>
         <file>qml/LoadingScreen.qml</file>
         <file>qml/Popup_.qml</file>
+        <file>qml/Switches/SwitchPanel.qml</file>
+        <file>qml/SharedComponents/ProgressBar_.qml</file>
     </qresource>
 </RCC>

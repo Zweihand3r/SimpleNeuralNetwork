@@ -85,7 +85,7 @@ Item {
 
                 TextField {
                     id: testStepTf
-                    text: "1000"
+                    text: "10"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     validator: RegExpValidator { regExp: /[0-9]+/ }
@@ -102,7 +102,7 @@ Item {
 
                 TextField {
                     id: testLoopsTf
-                    text: "10"
+                    text: "1000"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 32
                     validator: RegExpValidator { regExp: /[0-9]+/ }
@@ -189,10 +189,36 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
+
+        ColumnLayout {
+            anchors.centerIn: parent
+
+            Repeater {
+                id: sumsRepeater
+                model: 10
+
+                RowLayout {
+                    property string text: "1 + 1 = 2 | 1.999"
+                    property var numbers: [1, 1]
+
+                    Text {
+                        font.pixelSize: 21
+                        text: parent.text
+                    }
+
+                    Button {
+                        text: "Graph"
+                        Layout.preferredHeight: 32
+                        onClicked: logResult(parent.numbers[0], parent.numbers[1])
+                    }
+                }
+            }
+        }
     }
 
     Item {
         id: chartFrame
+        visible: false
         anchors { fill: parent; leftMargin: 180 }
 
         ChartView {
@@ -203,14 +229,31 @@ Item {
 
             LineSeries {
                 id: lineSeries
-                name: "LineSeries"
-                XYPoint { x: 0; y: 0 }
-                XYPoint { x: 1.1; y: 2.1 }
-                XYPoint { x: 1.9; y: 3.3 }
-                XYPoint { x: 2.1; y: 2.1 }
-                XYPoint { x: 2.9; y: 4.9 }
-                XYPoint { x: 3.4; y: 3.0 }
-                XYPoint { x: 4.1; y: 3.3 }
+                name: "Network Output"
+                axisX: xAxis
+                axisY: yAxis
+            }
+
+            LineSeries {
+                id: avgSeries
+                name: "Network Average"
+                axisX: xAxis
+                axisY: yAxis
+            }
+
+            LineSeries {
+                id: actualSeries
+                axisX: xAxis
+                axisY: yAxis
+                color: "#EC1111"
+            }
+
+            ValueAxis {
+                id: xAxis
+            }
+
+            ValueAxis {
+                id: yAxis
             }
         }
 
@@ -218,8 +261,8 @@ Item {
             anchors { bottom: parent.bottom }
 
             Button {
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 padding: 0
                 text: "+"
 
@@ -227,12 +270,20 @@ Item {
             }
 
             Button {
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 padding: 0
                 text: "-"
 
                 onClicked: chartView.zoomOut()
+            }
+
+            Button {
+                Layout.preferredHeight: 32
+                padding: 0
+                text: "Exit"
+
+                onClicked: chartFrame.visible = false
             }
         }
     }
@@ -344,10 +395,6 @@ Item {
         }
         else {
             trainTimer.stop()
-
-            console.log("29 + 65 = " + (29 + 65))
-            var res = logResult(29, 65)
-            printArray(res, "Log Results")
         }
     }
 
@@ -367,19 +414,47 @@ Item {
         var results = []
         var a_norm = _normalize(a, min, max)
         var b_norm = _normalize(b, min, max)
-        var loopIndex = maxLoops
+        var loopIndex = 0
+        var yMin = 200
+        var yMax = 0
 
         lineSeries.clear()
+        avgSeries.clear()
 
-        logs.forEach(function(weights) {
+        actualSeries.clear()
+        actualSeries.name = "Actual: " + a + " + " + b + " = " + (a + b)
+
+        var avg = 0
+
+        logs.forEach(function(weights, index) {
             var res_norm = Nef.predict([a_norm, b_norm], weights)
             var res = _deNormalize(res_norm, min, max * 2)
 
-            lineSeries.append(loopIndex, res)
-            loopIndex += maxLoops
+            yMin = Math.min(yMin, res)
+            yMax = Math.max(yMax, res)
+
+            lineSeries.append(index, res)
 
             results.push(res)
+
+            avg += res
         })
+
+        avg = avg / (logs.length - 1)
+
+        actualSeries.append(0, (a + b))
+        actualSeries.append(logs.length - 1, (a + b))
+
+        avgSeries.append(0, avg)
+        avgSeries.append(logs.length - 1, avg)
+
+        xAxis.min = 0
+        xAxis.max = logs.length
+
+        yAxis.min = yMin
+        yAxis.max = yMax
+
+        chartFrame.visible = true
 
         return results
     }
@@ -399,7 +474,9 @@ Item {
             var res_normal = Nef.predict(inputs, weights)
             var res = _deNormalize(res_normal, min, max * 2)
 
-            mainText.text += (a + " + " + b + " = " + (a + b) + " | " + res + "\n")
+//            mainText.text += (a + " + " + b + " = " + (a + b) + " | " + res + "\n")
+            sumsRepeater.itemAt(index).text = a + " + " + b + " = " + (a + b) + " | " + res.toFixed(4)
+            sumsRepeater.itemAt(index).numbers = [a, b]
         }
     }
 

@@ -11,14 +11,14 @@ Item {
     id: rootSwitches
     width: parent.width
     height: parent.height
-    Rectangle { anchors.fill: parent; color: "#000000" }
 
     property int switchCount: 3
     property int outputCount: 1
+    property int outputType: 0
 
     property int trainStepIndex: 0
     property int totalStepsTrained: 0
-    property int trainBatchCount: parseInt(stepsDropdown.currentItem)
+    property int trainBatchCount: switchPanel.stepCount
 
     property var inputs: []
     property var outputs: []
@@ -28,7 +28,7 @@ Item {
 
     Flickable {
         anchors {
-            right: controlsPanel.left; left: parent.left; top: parent.top; bottom: parent.bottom
+            right: controlsPanel.left; left: parent.left; top: parent.top; bottom: footer.top
             rightMargin: 20; leftMargin: 20; topMargin: 20; bottomMargin: 20
         }
 
@@ -46,6 +46,7 @@ Item {
                 SwitchRow {
                     switchCount: rootSwitches.switchCount
                     outputCount: rootSwitches.outputCount
+                    outputType: rootSwitches.outputType
                 }
             }
         }
@@ -58,128 +59,21 @@ Item {
             topMargin: 8; rightMargin: 20; bottomMargin: 20
         }
 
-        /*Rectangle {
-            anchors.fill: parent
-            color: "#00000000"; radius: 8
-            border { width: 2; color: "#FFFFFF" }
-        }*/
+        SwitchPanel {
+            id: switchPanel
+        }
+    }
 
-        Flickable {
-            contentHeight: setConColumn.height; contentWidth: width
-            anchors { left: parent.left; top: parent.top; right: parent.right }
+    Item {
+        id: footer
+        height: 44
+        anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
+        Rectangle { anchors.fill: parent; color: col_bg; opacity: 0.85 }
 
-            ColumnLayout {
-                id: setConColumn
-                width: parent.width
-
-                Item { Layout.preferredHeight: 1 }
-
-                /* Settings */
-
-                RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
-
-                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-
-                    Text {
-                        text: "SETTINGS"; color: "#FFFFFF"
-                        font { pixelSize: 17; bold: true }
-                    }
-
-                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-                }
-
-                Button_Dropdown {
-                    id: inputDropdown
-                    text: "Input Count"
-                    Layout.fillWidth: true
-                    currentIndex: 1
-                    dropdownItems: ["Two", "Three", "Four"]
-                }
-
-                Button_Dropdown {
-                    id: outputDropdown
-                    text: "Output Count"
-                    Layout.fillWidth: true
-                    dropdownItems: ["One", "Two", "Three"]
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-
-                    Button_ {
-                        Layout.preferredHeight: 30; Layout.fillWidth: true
-                        text: "Revert"; horizontalAlignment: Text.AlignHCenter
-                        onClicked: {
-                            inputDropdown.setCurrentIndex(switchCount - 2)
-                            outputDropdown.setCurrentIndex(outputCount - 1)
-                        }
-                    }
-
-                    Button_ {
-                        Layout.preferredHeight: 30; Layout.fillWidth: true
-                        text: "Apply"; horizontalAlignment: Text.AlignHCenter
-                        onClicked: loadingScreen.showAnim()
-                    }
-                }
-
-                Item { Layout.preferredHeight: 4 }
-
-                /* Controls */
-
-                RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
-
-                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-
-                    Text {
-                        text: "CONTROLS"; color: "#FFFFFF"
-                        font { pixelSize: 17; bold: true }
-                    }
-
-                    Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-                    Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-                }
-
-                /*Button_ {
-                    Layout.fillWidth: true
-                    fontSize: 17; text: "Test"
-                }*/
-
-                Button_Dropdown {
-                    id: stepsDropdown
-                    text: "Train Steps"
-                    Layout.fillWidth: true
-                    dropdownItems: ["10", "1000",  "100000", "10000000"]
-                }
-
-                Button_ {
-                    Layout.fillWidth: true
-                    text: "Train Network"
-                    onClicked: trainNetwork()
-                }
-
-                Button_ {
-                    Layout.fillWidth: true
-                    text: "Wipe Network"
-                    onClicked: clearNetwork()
-                }
-
-                Button_ {
-                    Layout.fillWidth: true
-                    text: "Compute Network Output"
-                    onClicked: computeNetworkOutput()
-                }
-
-                Item { Layout.preferredHeight: 1 }
-            }
+        Text {
+            anchors { centerIn: parent }
+            font.pixelSize: 21; color: col_prim
+            text: "Network trained <b>" + totalStepsTrained + "</b> times"
         }
     }
 
@@ -190,30 +84,11 @@ Item {
         visible: trainTimer.running
         Rectangle { anchors.fill: parent; opacity: 0.8; color: "#000000" }
 
-        ProgressBar {
+        ProgressBar_ {
             id: pb
             from: 0; to: trainBatchCount - 1
             value: trainStepIndex
             anchors.centerIn: parent
-
-            background: Rectangle {
-                implicitWidth: 200
-                implicitHeight: 6
-                color: "#00000000"; radius: height / 2
-                border { width: 1; color: "#FFFFFF" }
-            }
-
-            contentItem: Item {
-                implicitWidth: 200
-                implicitHeight: 4
-
-                Rectangle {
-                    width: pb.visualPosition * parent.width
-                    height: parent.height
-                    radius: parent.height / 2
-                    color: "#FFFFFF"
-                }
-            }
         }
     }
 
