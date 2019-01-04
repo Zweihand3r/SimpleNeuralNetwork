@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 import '../../js/Permutation.js' as Permute
 import '../../js/NeuralFunctions.js' as NeuralFunctions
 
-import '../SharedComponents'
+import '../Controls'
 
 Item {
     id: rootSwitches
