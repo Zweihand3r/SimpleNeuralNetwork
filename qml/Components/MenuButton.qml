@@ -1,81 +1,86 @@
 import QtQuick 2.7
+import QtQuick.Layouts 1.3
+
+import '../Controls'
 
 Item {
     id: rootMbt
-    width: 48; height: 44
+    implicitWidth: 144
+    implicitHeight: 44
+    clip: true
 
-    property bool presented: false
+    property bool selected: false
+
+    property string text: "Button"
+
+    signal clicked()
+    signal delayedClick()
 
     MouseArea {
-        id: tapable
+        id: clicky
         hoverEnabled: true
-        anchors { fill: parent }
-        onClicked: menu.presented = !menu.presented
-    }
+        anchors.fill: parent
+        onClicked: clickHandler(mouseX, mouseY)
 
-    Item {
-        id: content
-        width: 44; height: 44; anchors {
-            top: parent.top; right: parent.right; bottom: parent.bottom
+        Rectangle {
+            anchors { fill: parent; margins: 2 } radius: 2
+            color: col_bg; opacity: clicky.containsMouse ? 1 : 0
+            Behavior on opacity { OpacityAnimator { duration: 80 } }
         }
 
         Rectangle {
-            radius: 4
-            anchors { fill: parent; margins: 4 }
-            color: tapable.containsMouse ? col_prim : col_bg
-            Behavior on color { ColorAnimation { duration: 120 }}
+            id: clickIndicator; visible: false;
+            color: col_prim; radius: width / 2; anchors.centerIn: parent
         }
 
-        Rectangle {
-            id: mid
-            x: 10; y: 21
-            width: 24; height: 2; radius: height / 2
-            color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
-        }
+        Item {
+            height: parent.height; width: 3; anchors {
+                right: parent.right; rightMargin: selected ? -1 : -10
+            }
 
-        Rectangle {
-            id: bottom
-            x: 10; y: 29
-            width: 24; height: 2; radius: height / 2
-            color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
-        }
+            Behavior on anchors.rightMargin { NumberAnimation { duration: 80 } }
 
-        Rectangle {
-            id: top
-            x: 10; y: 13
-            width: 24; height: 2; radius: height / 2
-            color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Rectangle {
+                anchors { centerIn: parent }
+                width: 16; height: 16; color: col_prim; rotation: 45
+
+                Rectangle {
+                    anchors { centerIn: parent }
+                    width: 12; height: 12; color: col_bg
+                }
+            }
         }
     }
 
-    states: [
-        State {
-            name: "presented"
-            when: presented
+    RowLayout {
+        anchors { fill: parent; margins: 8 }
 
-            PropertyChanges { target: top; x: 12 }
-            PropertyChanges { target: top; y: 15 }
-            PropertyChanges { target: top; height: 3 }
-            PropertyChanges { target: top; width: 18 }
-            PropertyChanges { target: top; rotation: -45 }
+        Item { Layout.preferredWidth: 1 }
 
-            PropertyChanges { target: bottom; x: 12 }
-            PropertyChanges { target: bottom; y: 27 }
-            PropertyChanges { target: bottom; height: 3 }
-            PropertyChanges { target: bottom; width: 18 }
-            PropertyChanges { target: bottom; rotation: 45 }
+        Text {
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            text: rootMbt.text; font { pixelSize: 21 }
+            color: clicky.containsMouse ? col_prim : col_bg
 
-            PropertyChanges { target: mid; x: 14 }
-            PropertyChanges { target: mid; width: 2 }
+            Behavior on color { ColorAnimation { duration: 120 } }
         }
-    ]
+    }
 
-    transitions: [
-        Transition {
-            NumberAnimation { properties: "x, y, width, height, rotation"; easing.type: Easing.InCurve; duration: 160 }
-        }
-    ]
+    ParallelAnimation {
+        id: clickAnim
+        onStopped: { clickIndicator.visible = false; rootMbt.delayedClick() }
+        NumberAnimation { target: clickIndicator; property: "width"; from: 0; to: width * 1.2; duration: 360 }
+        NumberAnimation { target: clickIndicator; property: "height"; from: 0; to: width * 1.2; duration: 360 }
+        OpacityAnimator { target: clickIndicator; from: 1; to: 0; duration: 360; easing.type: Easing.InQuart }
+    }
+
+    function clickHandler(mouseX, mouseY) {
+        rootMbt.clicked()
+        if (selected) return
+
+        clickIndicator.anchors.horizontalCenterOffset = mouseX - (width / 2)
+        clickIndicator.anchors.verticalCenterOffset = mouseY - (height / 2)
+        clickIndicator.visible = true
+        clickAnim.start()
+    }
 }

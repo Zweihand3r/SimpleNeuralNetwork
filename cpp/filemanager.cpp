@@ -21,7 +21,7 @@ void FileManager::saveFile(const QString string, const QString path, const QStri
 
 QString FileManager::loadFile(const QString path)
 {
-
+    return "";
 }
 
 QString FileManager::getPath(FileManager::DefaultDirectories dir)
@@ -33,8 +33,5 @@ QString FileManager::getPath(FileManager::DefaultDirectories dir)
     case FileManager::CurrentDirectory:
     case FileManager::BuildDirectory:
         return QDir::currentPath() + "/";
-
-    default:
-        return "";
     }
 }

@@ -2,12 +2,15 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 import './Controls'
+import './Components'
 
 Item {
     id: rootMenu
     width: windowWidth; height: windowHeight
 
     property bool presented: false
+
+    property int currentStackIndex: 0
 
     property int panelWidth: 240
     property int animDuration: 240
@@ -21,12 +24,35 @@ Item {
         Rectangle { anchors.fill: parent; color: col_prim }
 
         ColumnLayout {
-            anchors { fill: parent; margins: 12 }
+            anchors { fill: parent; leftMargin: 0; topMargin: 12; rightMargin: 0; bottomMargin: 12 }
 
             Image_ {
                 Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
                 source: 'qrc:/assets/Images/Neural_Brain.png'; fillMode: Image.PreserveAspectFit
                 Layout.preferredWidth: 90; Layout.preferredHeight: paintedHeight; tint: col_bg
+            }
+
+            Item { Layout.preferredHeight: 2 }
+
+            Repeater {
+                model: ["Switches"]
+                MenuButton {
+                    text: modelData
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignTop
+                    selected: currentStackIndex === index
+                    onClicked: currentStackIndex = index
+                }
+            }
+
+            Item { Layout.preferredHeight: 1; Layout.fillHeight: true }
+
+            Button_Dropdown {
+                id: themeDropdown; text: "Theme"
+                Layout.leftMargin: 12; Layout.rightMargin: 12
+                Layout.fillWidth: true; Layout.alignment: Qt.AlignBottom
+                dropdownItems: ["Dark", "Light"]; _col_prim: col_bg; _col_bg: col_prim
+                onDelayedClick: theme = currentItem.toLowerCase()
             }
         }
     }
@@ -34,6 +60,6 @@ Item {
     Timer {
         id: delayTimer
         interval: animDuration
-        onTriggered: menuButton.presented = presented
+        onTriggered: menuIndicator.presented = presented
     }
 }

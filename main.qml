@@ -19,14 +19,18 @@ ApplicationWindow {
         id: fileManager
     }
 
+    DataManager {
+        id: dataManager
+    }
+
     Tests {
         id: tests
-        visible: false
+//        visible: false
     }
 
     Content {
         id: content
-//        visible: false
+        visible: false
     }
 
     function printArray(arr, title) {
