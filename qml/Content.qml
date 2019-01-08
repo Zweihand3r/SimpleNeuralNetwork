@@ -13,12 +13,16 @@ Item {
     property int windowWidth: 853
     property int windowHeight: 480
 
+    property string theme: "dark"
+
     /* Colors */
     property color col_accent: "#7666EF"
 
     property color col_prim: "#FFFFFF"
     property color col_prim_dim: "#656565"
     property color col_bg: "#000000"
+
+    onThemeChanged: changeTheme()
 
     Menu {
         id: menu
@@ -64,8 +68,8 @@ Item {
             }
         }
 
-        MenuButton {
-            id: menuButton
+        MenuIndicator {
+            id: menuIndicator
         }
     }
 
@@ -75,5 +79,14 @@ Item {
 
     Popup_ {
         id: popup
+    }
+
+    function changeTheme() {
+        var colorProperties = ["accent", "prim", "prim_dim", "bg"]
+        var colors = dataManager.themes[theme]
+        colorProperties.forEach(function(prop) {
+            prop = "col_" + prop
+            rootContent[prop] = colors[prop]
+        })
     }
 }

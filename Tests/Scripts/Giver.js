@@ -2,8 +2,8 @@
   * From Becoming Human AI
   * https://becominghuman.ai/making-a-simple-neural-network-2ea1de81ec20
   *
-  * I dont think this is machine learning from what i have read so far. But then again what do
-  * I know. Need to adjust weights
+  * I dont think this is machine learning from what i have read so far.
+  * But then again what do I know. Need to adjust weights
   */
 
 

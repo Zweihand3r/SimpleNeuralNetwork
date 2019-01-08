@@ -7,8 +7,8 @@ MouseArea {
     hoverEnabled: true; clip: true
     onClicked: clickHandler(mouseX, mouseY)
 
-    property color col_accent: "#FFFFFF"
-    property color col_bg: "#000000"
+    property color _col_prim: col_prim
+    property color _col_bg: col_bg
 
     property string text: "Button"
 
@@ -26,15 +26,15 @@ MouseArea {
 
     Rectangle {
         anchors { fill: parent; margins: contentMargin } radius: innerRadius
-        color: col_accent; opacity: parent.containsMouse ? 1 : 0
+        color: _col_prim; opacity: parent.containsMouse ? 1 : 0
         Behavior on opacity { OpacityAnimator { duration: 120 } }
     }
-    Rectangle { id: clickIndicator; visible: false; color: col_bg; radius: width / 2 ; anchors.centerIn: parent }
-    Rectangle { anchors.fill: parent; radius: parent.radius; color: "#00000000"; border { color: col_accent; width: borderWidth } }
+    Rectangle { id: clickIndicator; visible: false; color: _col_bg; radius: width / 2; anchors.centerIn: parent }
+    Rectangle { anchors.fill: parent; radius: parent.radius; color: "#00000000"; border { color: _col_prim; width: borderWidth } }
 
     Text {
         id: buttonText; anchors.fill: parent; text: button_.text ; font.pixelSize: fontSize
-        color: parent.containsMouse ? col_bg : col_accent; wrapMode: Text.WordWrap
+        color: parent.containsMouse ? _col_bg : _col_prim; wrapMode: Text.WordWrap
         verticalAlignment: Text.AlignVCenter; horizontalAlignment: button_.horizontalAlignment
         leftPadding: 12; rightPadding: 12
         Behavior on color { ColorAnimation { duration: 120 }}

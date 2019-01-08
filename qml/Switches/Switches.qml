@@ -82,7 +82,7 @@ Item {
         hoverEnabled: true
         onClicked: forceActiveFocus()
         visible: trainTimer.running
-        Rectangle { anchors.fill: parent; opacity: 0.8; color: "#000000" }
+        Rectangle { anchors.fill: parent; opacity: 0.8; color: col_bg }
 
         ProgressBar_ {
             id: pb

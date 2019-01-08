@@ -32,12 +32,12 @@ RowLayout {
 
         Rectangle {
             anchors { fill: parent; margins: 5 }
-            color: "transparent"
+            color: "transparent"; radius: 4
             border { width: 2; color: rootSR.color }
 
             Rectangle {
                 anchors { fill: parent; margins: 4 }
-                color: rootSR.color
+                color: rootSR.color; radius: 1
                 scale: checked ? 1 : 0
 
                 Behavior on scale {
@@ -100,16 +100,24 @@ RowLayout {
                 id: userOutputDisplay
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: parent.height
-                onClicked: output = !output
                 enabled: checked; visible: selectable
                 opacity: checked ? 1 : 0.5
+                hoverEnabled: true
+                onClicked: output = !output
 
                 property bool output: false
 
-                Rectangle {
+                Item {
                     anchors { fill: parent }
-                    color: "transparent"; radius: width / 2
-                    border { width: 2; color: rootSR.color }
+
+                    Rectangle {
+                        anchors { fill: parent }
+                        color: "transparent"; radius: width / 2
+                        border { width: 2; color: rootSR.color }
+                        scale: userOutputDisplay.containsMouse ? 1.1 : 1
+
+                        Behavior on scale { ScaleAnimator { duration: 80 } }
+                    }
 
                     RadialGradient {
                         anchors { fill: parent; margins: -20 }
@@ -251,10 +259,8 @@ RowLayout {
     }
 
     function formatNumber(num) {
-        if (num === 1) return "1.0"
-        else {
-            num = Number(num).toFixed(2).toString()
-            return num.slice(1)
-        }
+        num = Number(num).toFixed(2).toString()
+        if (num === "1.00") return "1.0"
+        else return num.slice(1)
     }
 }

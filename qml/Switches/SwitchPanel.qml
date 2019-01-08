@@ -19,18 +19,18 @@ Flickable {
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
 
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
+            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
 
             Text {
                 text: "SETTINGS"; color: col_prim
                 font { pixelSize: 17; bold: true }
             }
 
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
         }
 
         Button_Dropdown {
@@ -84,18 +84,18 @@ Flickable {
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
 
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
+            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
 
             Text {
-                text: "CONTROLS"; color: "#FFFFFF"
+                text: "CONTROLS"; color: col_prim
                 font { pixelSize: 17; bold: true }
             }
 
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45 }
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45 }
+            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
+            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
         }
 
         /*Button_ {
