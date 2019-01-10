@@ -35,7 +35,7 @@ Item {
             Item { Layout.preferredHeight: 2 }
 
             Repeater {
-                model: ["Switches"]
+                model: ["Switches", "Mover"]
                 MenuButton {
                     text: modelData
                     Layout.fillWidth: true
@@ -49,10 +49,11 @@ Item {
 
             Button_Dropdown {
                 id: themeDropdown; text: "Theme"
+                currentIndex: dataManager.themeIndex
                 Layout.leftMargin: 12; Layout.rightMargin: 12
                 Layout.fillWidth: true; Layout.alignment: Qt.AlignBottom
                 dropdownItems: ["Dark", "Light"]; _col_prim: col_bg; _col_bg: col_prim
-                onDelayedClick: theme = currentItem.toLowerCase()
+                onDelayedClick: applyTheme()
             }
         }
     }
@@ -61,5 +62,12 @@ Item {
         id: delayTimer
         interval: animDuration
         onTriggered: menuIndicator.presented = presented
+    }
+
+    Component.onCompleted: applyTheme()
+
+    function applyTheme() {
+        theme = themeDropdown.currentItem.toLowerCase()
+        dataManager.themeIndex = themeDropdown.currentIndex
     }
 }

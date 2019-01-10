@@ -25,12 +25,12 @@ ApplicationWindow {
 
     Tests {
         id: tests
-//        visible: false
+        visible: false
     }
 
     Content {
         id: content
-        visible: false
+//        visible: false
     }
 
     function printArray(arr, title) {

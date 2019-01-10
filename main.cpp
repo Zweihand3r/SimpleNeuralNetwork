@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     Neural *neural = new Neural();
     engine.rootContext()->setContextProperty("neural", neural);
 
-    CppTests *cppTests = new CppTests();
+    CppTests *cppTests = new CppTests(neural);
     engine.rootContext()->setContextProperty("cppTests", cppTests);
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

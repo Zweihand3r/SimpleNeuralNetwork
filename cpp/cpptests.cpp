@@ -5,6 +5,11 @@ CppTests::CppTests(QObject *parent) : QObject(parent)
 
 }
 
+CppTests::CppTests(Neural *neural)
+{
+    m_neural = neural;
+}
+
 QVector<QVector<float> > CppTests::toVector(const QStringList stringList)
 {
     QVector<QVector<float>> vector;
@@ -77,6 +82,83 @@ QStringList CppTests::testTranspose(QStringList str)
 
     QStringList transposedStr = toStringList(transposed);
     return transposedStr;
+}
+
+void CppTests::testSlightlyHarder()
+{
+    QVector<QVector<float>> X = toVector({
+                                             "0 0 1",
+                                             "0 1 1",
+                                             "1 0 1",
+                                             "1 1 1"
+                                         });
+
+    QVector<QVector<float>> y = toVector({
+                                             "0",
+                                             "1",
+                                             "1",
+                                             "0"
+                                         });
+
+    qDebug() << "Input:" << X;
+    qDebug() << "Output:" << y;
+
+    /*QVector<QVector<float>> syn0 = m_neural->getRandomisedWeights(3, 4);
+    QVector<QVector<float>> syn1 = m_neural->getRandomisedWeights(4, 1);*/
+
+    QVector<QVector<float>> syn0 = toVector({
+                                                "0.1 0.3 -0.25 0.2",
+                                                "-0.4 0.2 -0.3 0.12",
+                                                "0.125 -0.7 -0.12 0.4"
+                                            });
+    QVector<QVector<float>> syn1 = toVector({
+                                                "0.24",
+                                                "-0.14",
+                                                "0.4",
+                                                "-0.6"
+                                            });
+
+    qDebug() << "cpptests.cpp: syn0:" << syn0;
+    qDebug() << "cpptests.cpp: syn1:" << syn1;
+
+    QVector<QVector<float>> l0 = X;
+    QVector<QVector<float>> l1;
+    QVector<QVector<float>> l2;
+
+    for (int index = 0; index < 10000; index++) {
+        l1 = m_neural->getSigmoid(Matrix::dot(l0, syn0));
+//        qDebug() << "cpptests.cpp: l1:" << l1;
+
+        l2 = m_neural->getSigmoid(Matrix::dot(l1, syn1));
+//        qDebug() << "cpptests.cpp: l2:" << l2;
+
+        QVector<QVector<float>> l2_error = Matrix::subtract(y, l2);
+//        qDebug() << "cpptests.cpp: l2_error:" << l2_error;
+
+        QVector<QVector<float>> l2_delta = Matrix::multiply(l2_error, m_neural->getSigmoidDerivative(l2));
+//        qDebug() << "cpptests.cpp: l2_delta:" << l2_delta;
+
+        QVector<QVector<float>> l1_error = Matrix::dot(l2_delta, Matrix::transpose(syn1));
+//        qDebug() << "cpptests.cpp: l1_error:" << l1_error;
+
+        QVector<QVector<float>> l1_delta = Matrix::multiply(l1_error, m_neural->getSigmoidDerivative(l1));
+//        qDebug() << "cpptests.cpp: l1_delta:" << l1_delta;
+
+        syn1 = Matrix::add(syn1, Matrix::dot(Matrix::transpose(l1), l2_delta));
+        syn0 = Matrix::add(syn0, Matrix::dot(Matrix::transpose(l0), l1_delta));
+
+//        qDebug() << "cpptests.cpp: syn0:" << syn0;
+//        qDebug() << "cpptests.cpp: syn1:" << syn1;
+    }
+
+    QVector<QVector<float>> testIn = toVector({
+                                                  "0 1 1"
+                                              });
+
+    l1 = m_neural->getSigmoid(Matrix::dot(testIn, syn0));
+    l2 = m_neural->getSigmoid(Matrix::dot(l1, syn1));
+
+    qDebug() << l2;
 }
 
 QVector<qreal> CppTests::dataTest(QVector<qreal> arr)

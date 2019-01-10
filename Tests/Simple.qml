@@ -568,19 +568,19 @@ Item {
                     [-0.6]
                 ]
 
-        for (var index = 0; index < 1; index++) {
+        for (var index = 0; index < 10000; index++) {
             var l0 = X.slice()
             var l1 = sigmoid(Matrix.dot(l0, syn0))
-            printArray(l1, "l1")
+//            printArray(l1, "l1")
 
             var l2 = sigmoid(Matrix.dot(l1, syn1))
-            printArray(l2, "l2")
+//            printArray(l2, "l2")
 
             var l2_error = Matrix.subtract(y, l2)
-            printArray(l2_error, "l2 error")
+//            printArray(l2_error, "l2 error")
 
             if (index % 1000 === 0) {
-                console.log("Error: " + l2_error)
+//                console.log("Error: " + l2_error)
                 //                var sum_ = 0
                 //                for (var index_ in l2_error[0]) {
                 //                    sum_ += Math.abs(l2_error[0][index_])
@@ -589,18 +589,18 @@ Item {
             }
 
             var l2_delta = Matrix.multiply(l2_error, sigmoidDerivative(l2))
-            printArray(l2_delta, "l2 delta")
+//            printArray(l2_delta, "l2 delta")
 
             var l1_error = Matrix.dot(l2_delta, Matrix.transpose(syn1))
-            printArray(l1_error, "l1 error")
+//            printArray(l1_error, "l1 error")
 
             var l1_delta = Matrix.multiply(l1_error, sigmoidDerivative(l1))
-            printArray(l1_delta, "l1 delta")
+//            printArray(l1_delta, "l1 delta")
 
             syn1 = Matrix.add(syn1, Matrix.dot(Matrix.transpose(l1), l2_delta))
             syn0 = Matrix.add(syn0, Matrix.dot(Matrix.transpose(l0), l1_delta))
-            //            printArray(syn1, "syn1")
-            //            printArray(syn0, "syn0")
+//            printArray(syn1, "syn1")
+//            printArray(syn0, "syn0")
         }
 
         l1 = sigmoid(Matrix.dot([[0,1,1]], syn0))

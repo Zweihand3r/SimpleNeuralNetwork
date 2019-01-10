@@ -109,7 +109,7 @@ Rectangle {
             }
 
             Repeater {
-                model: ["Transpose"]
+                model: ["Transpose", "Test Network"]
                 Button {
                     text: modelData
                     Layout.fillWidth: true
@@ -129,6 +129,16 @@ Rectangle {
                             var res = Matrix.transpose(toVector(str))
                             console.log("Interface.qml: res: ")
                             printArray(res)
+                            break
+
+                        case "Test Network":
+                            console.time("Cpp Time")
+                            cppTests.testSlightlyHarder()
+                            console.timeEnd("Cpp Time")
+
+                            console.time("Js Time")
+                            simple.slightlyHarderTest()
+                            console.timeEnd("Js Time")
                         }
                     }
                 }
