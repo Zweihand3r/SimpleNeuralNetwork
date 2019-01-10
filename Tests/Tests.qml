@@ -14,7 +14,7 @@ Rectangle {
         currentIndex: tabbar.currentIndex
 
         Simple {
-
+            id: simple
         }
 
         AddNetwork {

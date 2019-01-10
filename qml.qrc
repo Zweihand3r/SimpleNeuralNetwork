@@ -32,5 +32,7 @@
         <file>qml/Components/MenuIndicator.qml</file>
         <file>qml/Data/Themes.qml</file>
         <file>qml/DataManager.qml</file>
+        <file>qml/Mover/Mover.qml</file>
+        <file>qml/Mover/Cell.qml</file>
     </qresource>
 </RCC>

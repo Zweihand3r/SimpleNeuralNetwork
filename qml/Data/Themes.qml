@@ -9,9 +9,9 @@ QtObject {
     }
 
     property var light: {
-        "col_accent": "#7666EF",
+        "col_accent": "#899910",
         "col_prim": "#000000",
-        "col_prim_dim": "#656565",
+        "col_prim_dim": "#9A9A9A",
         "col_bg": "#FFFFFF"
     }
 }

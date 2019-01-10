@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 import './Switches'
+import './Mover'
 import './Components'
 
 Item {
@@ -26,6 +27,7 @@ Item {
 
     Menu {
         id: menu
+        currentStackIndex: 1
     }
 
     Item {
@@ -41,13 +43,18 @@ Item {
 
         StackLayout {
             id: contentStack
-            currentIndex: 0; anchors {
+            currentIndex: menu.currentStackIndex; anchors {
                 left: parent.left; top: header.bottom; right: parent.right; bottom: parent.bottom
             }
 
             Switches {
                 id: switches
                 objectName: "Switches"
+            }
+
+            Mover {
+                id: mover
+                objectName: "Mover"
             }
         }
 

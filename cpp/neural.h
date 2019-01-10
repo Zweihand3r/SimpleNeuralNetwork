@@ -16,10 +16,14 @@ public:
 private:
     QVector<QVector<float>> sigmoid(QVector<QVector<float>> mat);
     QVector<QVector<float>> sigmoidDerivative(QVector<QVector<float>> mat);
+    QVector<QVector<float>> randomisedWeights(const int rows, const int cols);
 
 signals:
 
 public slots:
+    QVector<QVector<float>> getSigmoid(QVector<QVector<float>> mat);
+    QVector<QVector<float>> getSigmoidDerivative(QVector<QVector<float>> mat);
+    QVector<QVector<float>> getRandomisedWeights(const int rows, const int cols);
 };
 
 #endif // NEURAL_H

@@ -38,5 +38,37 @@ QVector<QVector<float> > Neural::sigmoidDerivative(QVector<QVector<float> > mat)
         res[rowIndex] = res_row;
     }
 
+    return Matrix::multiply(mat, res);
+}
+
+QVector<QVector<float> > Neural::randomisedWeights(const int rows, const int cols)
+{
+    QVector<QVector<float>> res(rows);
+
+    for (int index = 0; index < rows; index++) {
+        QVector<float> res_row(cols);
+
+        for (int index_ = 0; index_ < cols; index_++) {
+            res_row[index_] = (rand() % 200) / 100.0 - 1.0;
+        }
+
+        res[index] = res_row;
+    }
+
     return res;
+}
+
+QVector<QVector<float> > Neural::getSigmoid(QVector<QVector<float> > mat)
+{
+    return sigmoid(mat);
+}
+
+QVector<QVector<float> > Neural::getSigmoidDerivative(QVector<QVector<float> > mat)
+{
+    return sigmoidDerivative(mat);
+}
+
+QVector<QVector<float> > Neural::getRandomisedWeights(const int rows, const int cols)
+{
+    return randomisedWeights(rows, cols);
 }
