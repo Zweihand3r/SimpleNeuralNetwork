@@ -7,8 +7,11 @@ Item {
     width: parent.width
     height: parent.height
 
-    property int rows: 16
-    property int columns: 24
+    /* Debug */
+    property bool enableCheckLogs: false
+
+    property int rows: 17
+    property int columns: 21
 
     property var cells: []
     property var population: []
@@ -19,14 +22,26 @@ Item {
      *   2
      */
     property int orientation: 2
-    property point currentLocation: Qt.point(0, 0)
+
+    property int currentX: 0
+    property int currentY: 0
 
     readonly property var parts: ["head", "neck", "body", "feet"]
 
     Item {
         id: gridContainer
         width: columns * 24; height: rows * 24
-        anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 26 }
+        anchors { verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 23 }
+    }
+
+    Item {
+        id: controlsPanel
+        width: 280; clip: true; anchors {
+            top: parent.top; right: parent.right; bottom: parent.bottom
+            topMargin: 20; rightMargin: 20; bottomMargin: 20
+        }
+
+        Rectangle { anchors.fill: parent; opacity: 0.5; color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1) }
     }
 
     Item {
@@ -91,6 +106,24 @@ Item {
                 anchors { fill: parent; margins: 8 }
                 color: col_accent; visible: parent.focus
             }
+
+            RowLayout {
+                anchors { bottom: parent.top }
+                Button {
+                    text: bakedTimer.running ? "Stop Baked" : "Start Baked"
+                    onClicked: bakedTimer.running ? bakedTimer.stop() : bakedTimer.start()
+                }
+
+                Button {
+                    text: "reset Perp"; onClicked: dropPerp()
+
+                    function dropPerp() {
+                        if (!drop(parseInt(Math.random() * rows), parseInt(Math.random() * columns), parseInt(Math.random() * 3))) {
+                            dropPerp()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -107,6 +140,8 @@ Item {
         return dropPerp(parseInt(x), parseInt(y), parseInt(orientation))
     }
 
+    function setCheckLogs(log) { enableCheckLogs = parseInt(log) }
+
     /* --------------- Baked ---------------- */
 
     function startBaked() { bakedTimer.start() }
@@ -117,18 +152,26 @@ Item {
         var left = !checkLeft()
         var right = !checkRight()
 
+        var prevX = currentX
+        var prevY = currentY
+
+        console.log("Mover.qml: possibleMoves at (" + currentX + ", " + currentY + ") > fwd: " + fwd + " left: " + left + " right: " + right)
+
         if (fwd) {
-            if (left) {
-                if (Math.random() > 0.75) { moveLeft(); return }
-            } else if (right) {
-                if (Math.random() > 0.75) { moveRight(); return }
-            } moveFwd()
+            if (left) { if (Math.random() > 0.75) { moveLeft(); return } }
+            if (right) { if (Math.random() > 0.75) { moveRight(); return } }
+            moveFwd()
         } else {
             if (left && right) {
                 if (Math.random() > 0.5) { moveLeft(); return }
                 moveRight()
             } else if (left) moveLeft()
             else moveRight()
+        }
+
+        if (prevX === currentX && prevY === currentY) {
+            console.log("Mover.qml: Perp crashed")
+            bakedTimer.stop()
         }
     }
 
@@ -143,7 +186,8 @@ Item {
             })
 
             orientation = _orientation
-            currentLocation = Qt.point(x, y)
+            currentX = x
+            currentY = y
             return true
         }
         else {
@@ -154,55 +198,55 @@ Item {
 
     function moveFwd() {
         switch (orientation) {
-        case 0: return up(currentLocation.x, currentLocation.y)
-        case 1: return right(currentLocation.x, currentLocation.y)
-        case 2: return down(currentLocation.x, currentLocation.y)
-        case 3: return left(currentLocation.x, currentLocation.y)
+        case 0: return up(currentX, currentY)
+        case 1: return right(currentX, currentY)
+        case 2: return down(currentX, currentY)
+        case 3: return left(currentX, currentY)
         }
     }
 
     function moveLeft() {
         switch (orientation) {
-        case 0: return left(currentLocation.x, currentLocation.y)
-        case 1: return up(currentLocation.x, currentLocation.y)
-        case 2: return right(currentLocation.x, currentLocation.y)
-        case 3: return down(currentLocation.x, currentLocation.y)
+        case 0: return left(currentX, currentY)
+        case 1: return up(currentX, currentY)
+        case 2: return right(currentX, currentY)
+        case 3: return down(currentX, currentY)
         }
     }
 
     function moveRight() {
         switch (orientation) {
-        case 0: return right(currentLocation.x, currentLocation.y)
-        case 1: return down(currentLocation.x, currentLocation.y)
-        case 2: return left(currentLocation.x, currentLocation.y)
-        case 3: return up(currentLocation.x, currentLocation.y)
+        case 0: return right(currentX, currentY)
+        case 1: return down(currentX, currentY)
+        case 2: return left(currentX, currentY)
+        case 3: return up(currentX, currentY)
         }
     }
 
     function checkFwd() {
         switch (orientation) {
-        case 0: return check(x - 1, y)
-        case 1: return check(x, y + 1)
-        case 2: return check(x + 1, y)
-        case 3: return check(x, y - 1)
+        case 0: return check(currentX - 1, currentY)
+        case 1: return check(currentX, currentY + 1)
+        case 2: return check(currentX + 1, currentY)
+        case 3: return check(currentX, currentY - 1)
         }
     }
 
     function checkLeft() {
         switch (orientation) {
-        case 0: return check(x, y - 1)
-        case 1: return check(x - 1, y)
-        case 2: return check(x, y + 1)
-        case 3: return check(x + 1, y)
+        case 0: return check(currentX, currentY - 1)
+        case 1: return check(currentX - 1, currentY)
+        case 2: return check(currentX, currentY + 1)
+        case 3: return check(currentX + 1, currentY)
         }
     }
 
     function checkRight() {
         switch (orientation) {
-        case 0: return check(x, y + 1)
-        case 1: return check(x + 1, y)
-        case 2: return check(x, y - 1)
-        case 3: return check(x - 1, y)
+        case 0: return check(currentX, currentY + 1)
+        case 1: return check(currentX + 1, currentY)
+        case 2: return check(currentX, currentY - 1)
+        case 3: return check(currentX - 1, currentY)
         }
     }
 
@@ -214,14 +258,16 @@ Item {
 
         perp_head.x = cells[x][y].perpX.head
         perp_head.y = cells[x][y].perpY.head
-        currentLocation = Qt.point(x, y)
+        currentX = x
+        currentY = y
     }
 
     function check(x, y) {
         if (x < 0 || x > rows - 1) return true
         if (y < 0 || y > columns - 1) return true
 
-        /*console.log("Mover.qml: checking " + cells[x][y] + ": " + population[x][y])*/
+        if (enableCheckLogs)
+            console.log("Mover.qml: checking " + cells[x][y] + ": " + population[x][y])
 
         return population[x][y]
     }
