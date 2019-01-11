@@ -34,5 +34,8 @@
         <file>qml/DataManager.qml</file>
         <file>qml/Mover/Mover.qml</file>
         <file>qml/Mover/Cell.qml</file>
+        <file>qml/Mover/MoverGrid.qml</file>
+        <file>qml/Mover/MoverPerp.qml</file>
+        <file>qml/Mover/MoverPanel.qml</file>
     </qresource>
 </RCC>
