@@ -89,4 +89,57 @@ Item {
             population.push(pop_row)
         }
     }
+
+    function populateTrack() {
+        fillPopulation(true)
+
+        /*for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                if ((i === 1 || i === rows - 2) && j > 0 && j < columns - 1) {
+                    population[i][j] = false
+                }
+                else if ((j === 1 || j === columns - 2) && i > 0 && i < rows - 1) {
+                    population[i][j] = false
+                }
+            }
+        }*/
+
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                if ((i === 1 || i === rows - 2) && j > 3 && j < columns - 4) {
+                    population[i][j] = false
+                }
+                else if ((j === 1 || j === columns - 2) && i > 3 && i < rows - 4) {
+                    population[i][j] = false
+                }
+            }
+        }
+
+        setPopulationToGrid()
+    }
+
+    function fillPopulation(fill) {
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                population[i][j] = fill
+            }
+        }
+    }
+
+    function setPopulationToGrid() {
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                cells[i][j].fill = population[i][j]
+            }
+        }
+    }
+
+    function clearGrid() {
+        for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                cells[i][j].fill = false
+                population[i][j] = false
+            }
+        }
+    }
 }
