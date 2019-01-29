@@ -2,6 +2,7 @@ import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 import '../Controls'
+import '../Components'
 
 Flickable {
     id: rootSwitchPanel
@@ -16,22 +17,7 @@ Flickable {
 
         /* Settings */
 
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
-
-            Text {
-                text: "SETTINGS"; color: col_prim
-                font { pixelSize: 17; bold: true }
-            }
-
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
-        }
+        OptionsTitle { text: "Settings"; Layout.alignment: Qt.AlignHCenter }
 
         Button_Dropdown {
             id: inputDropdown
@@ -81,22 +67,7 @@ Flickable {
 
         /* Controls */
 
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
-
-            Text {
-                text: "CONTROLS"; color: col_prim
-                font { pixelSize: 17; bold: true }
-            }
-
-            Rectangle { Layout.preferredHeight: 7; Layout.preferredWidth: 7; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_prim }
-            Rectangle { Layout.preferredHeight: 5; Layout.preferredWidth: 5; rotation: 45; color: col_prim }
-        }
+        OptionsTitle { text: "Controls"; Layout.alignment: Qt.AlignHCenter }
 
         /*Button_ {
             Layout.fillWidth: true
