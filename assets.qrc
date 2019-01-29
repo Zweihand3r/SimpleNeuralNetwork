@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>assets/Images/Neural_Brain.png</file>
+        <file>assets/Images/Icon_Grid.png</file>
     </qresource>
 </RCC>

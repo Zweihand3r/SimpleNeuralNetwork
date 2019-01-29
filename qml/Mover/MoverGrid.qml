@@ -9,7 +9,7 @@ Item {
     property bool enableCheckLogs: false
 
     property int rows: 17
-    property int columns: 21
+    property int columns: 32
 
     property var cells: []
     property var population: []
