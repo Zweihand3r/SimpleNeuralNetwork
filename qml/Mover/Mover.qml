@@ -9,7 +9,7 @@ Item {
 
     MoverGrid {
         id: grid; anchors {
-            verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 23
+            verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 20
         }
     }
 
@@ -17,15 +17,18 @@ Item {
 
     Item {
         id: controlsPanel
-        width: 280; clip: true; anchors {
+        width: 64; anchors {
             top: parent.top; right: parent.right; bottom: parent.bottom
-            topMargin: 20; rightMargin: 20; bottomMargin: 20
+            topMargin: 20; rightMargin: 0; bottomMargin: 20
         }
 
-        Rectangle { anchors.fill: parent; opacity: 0.5; color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1) }
+        MoverPanel {
+
+        }
     }
 
     TextField {
+        visible: false
         anchors { bottom: parent.bottom; right: parent.right }
         Keys.onReturnPressed: function() {
             var com_arr = text.split(" ")
