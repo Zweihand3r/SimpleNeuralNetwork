@@ -222,4 +222,17 @@ Item {
             console.log("MoverPerp.qml: Perp crashed")
         }
     }
+
+    function dropRandom() {
+        if (!drop(parseInt(Math.random() * grid.rows), parseInt(Math.random() * grid.columns), parseInt(Math.random() * 3))) {
+            dropRandom()
+        }
+    }
+
+    function relocate() {
+        /* Only moves if current cell occupied */
+        if (grid.check(currentX, currentY)) {
+            dropRandom()
+        }
+    }
 }

@@ -6,7 +6,8 @@ SOURCES += main.cpp \
     cpp/filemanager.cpp \
     cpp/neural.cpp \
     cpp/matrix.cpp \
-    cpp/cpptests.cpp
+    cpp/cpptests.cpp \
+    cpp/util/input.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -39,4 +40,5 @@ HEADERS += \
     cpp/filemanager.h \
     cpp/neural.h \
     cpp/matrix.h \
-    cpp/cpptests.h
+    cpp/cpptests.h \
+    cpp/util/input.h

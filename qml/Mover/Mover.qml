@@ -55,13 +55,7 @@ Item {
                 }
 
                 Button {
-                    text: "reset Perp"; onClicked: dropPerp()
-
-                    function dropPerp() {
-                        if (!drop(parseInt(Math.random() * grid.rows), parseInt(Math.random() * grid.columns), parseInt(Math.random() * 3))) {
-                            dropPerp()
-                        }
-                    }
+                    text: "reset Perp"; onClicked: perp.dropRandom()
                 }
             }
         }

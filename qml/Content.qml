@@ -88,6 +88,18 @@ Item {
         id: popup
     }
 
+    Rectangle {
+        id: _bounds; visible: false
+
+        function outline(x, y, width, height, color) {
+            visible = true; _bounds.x = x; _bounds.y = y
+            _bounds.width = width; _bounds.height = height
+            if (color !== undefined) _bounds.color = color
+        }
+
+        function hide() { visible = false }
+    }
+
     function changeTheme() {
         var colorProperties = ["accent", "prim", "prim_dim", "bg"]
         var colors = dataManager.themes[theme]
