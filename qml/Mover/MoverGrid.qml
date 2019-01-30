@@ -72,28 +72,40 @@ Item {
 
             for (var j = 0; j < columns; j++) {
                 var component = Qt.createComponent("Cell.qml")
-                var fill = Math.random() > 0.75
                 var cell = component.createObject(gridContainer, {
                                                       "x": j * 24,
                                                       "y": i * 24,
                                                       "rowIndex": i,
                                                       "colIndex": j,
-                                                      "fill": fill
+                                                      "fill": false
                                                   })
 
                 row.push(cell)
-                pop_row.push(fill)
+                pop_row.push(false)
             }
 
             cells.push(row)
             population.push(pop_row)
         }
+
+        populateTrack()
     }
 
     function populateTrack() {
         fillPopulation(true)
 
         /*for (var i = 0; i < rows; i++) {
+            for (var j = 0; j < columns; j++) {
+                if ((i === 1 || i === rows - 2) && j > 3 && j < columns - 4) {
+                    population[i][j] = false
+                }
+                else if ((j === 1 || j === columns - 2) && i > 3 && i < rows - 4) {
+                    population[i][j] = false
+                }
+            }
+        }*/
+
+        for (var i = 0; i < rows; i++) {
             for (var j = 0; j < columns; j++) {
                 if ((i === 1 || i === rows - 2) && j > 0 && j < columns - 1) {
                     population[i][j] = false
@@ -102,16 +114,16 @@ Item {
                     population[i][j] = false
                 }
             }
-        }*/
+        }
 
+        setPopulationToGrid()
+    }
+
+    function populateRandom(density) {
+        if (density === undefined) density = 0.5
         for (var i = 0; i < rows; i++) {
             for (var j = 0; j < columns; j++) {
-                if ((i === 1 || i === rows - 2) && j > 3 && j < columns - 4) {
-                    population[i][j] = false
-                }
-                else if ((j === 1 || j === columns - 2) && i > 3 && i < rows - 4) {
-                    population[i][j] = false
-                }
+                population[i][j] = Math.random() < density
             }
         }
 

@@ -38,5 +38,6 @@
         <file>qml/Mover/MoverPerp.qml</file>
         <file>qml/Mover/MoverPanel.qml</file>
         <file>qml/Components/OptionsTitle.qml</file>
+        <file>qml/Mover/CellSelector.qml</file>
     </qresource>
 </RCC>
