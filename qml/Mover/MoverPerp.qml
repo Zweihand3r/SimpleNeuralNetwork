@@ -17,6 +17,8 @@ Item {
 
     property int crashIndex: 0
 
+    property bool crashed: false
+
     property Item head: perp_head
     property Item neck: perp_neck
     property Item body: perp_body
@@ -91,6 +93,7 @@ Item {
             orientation = _orientation
             currentX = x
             currentY = y
+            crashed = false
             return true
         }
         else {
@@ -145,6 +148,7 @@ Item {
     }
 
     function crash() {
+        crashed = true
         crashIndex = 0
         crashTimer.start()
     }
@@ -233,6 +237,6 @@ Item {
         /* Only moves if current cell occupied */
         if (grid.check(currentX, currentY)) {
             dropRandom()
-        }
+        } else drop(currentX, currentY, orientation)
     }
 }

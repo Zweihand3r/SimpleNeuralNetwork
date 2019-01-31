@@ -8,13 +8,20 @@ Item {
     /* Debug */
     property bool enableCheckLogs: false
 
+    property bool drawPopulation: true
+
     property int rows: 17
     property int columns: 32
 
     property var cells: []
     property var population: []
 
+    property var drawArray: []
+
     property bool boundsVisible: perp.boundsCheck()
+
+    property int drawIndex: 0
+    property bool drawing: false
 
     Item { id: gridContainer; anchors { fill: parent } }
 
@@ -22,6 +29,12 @@ Item {
         anchors { fill: parent; margins: -2 } opacity: boundsVisible ? 1 : 0
         color: "#00000000"; radius: 2; border { width: 2; color: col_prim }
         Behavior on opacity { OpacityAnimator { duration: 120 } }
+    }
+
+    Timer {
+        id: drawTimer
+        interval: 10; repeat: true
+        onTriggered: drawLoop()
     }
 
 
@@ -116,6 +129,7 @@ Item {
             }
         }
 
+        setDrawArray()
         setPopulationToGrid()
     }
 
@@ -139,9 +153,15 @@ Item {
     }
 
     function setPopulationToGrid() {
-        for (var i = 0; i < rows; i++) {
-            for (var j = 0; j < columns; j++) {
-                cells[i][j].fill = population[i][j]
+        if (drawPopulation) {
+            drawIndex = 0
+            drawTimer.start()
+        }
+        else {
+            for (var i = 0; i < rows; i++) {
+                for (var j = 0; j < columns; j++) {
+                    cells[i][j].fill = population[i][j]
+                }
             }
         }
     }
@@ -153,5 +173,54 @@ Item {
                 population[i][j] = false
             }
         }
+    }
+
+    function drawLoop() {
+        if (drawIndex < drawArray.length) {
+            var row = drawArray[drawIndex]
+            row.forEach(function(point) {
+                cells[point.x][point.y].fill = population[point.x][point.y]
+            })
+
+            drawIndex++
+        }
+    }
+
+    function setDrawArray() {
+        drawArray = []
+
+        var x_ = 0
+        var y_ = 0
+        var endOffset = 0
+
+        var row = []
+
+        while (endOffset < rows) {
+            row = []
+
+            for (var index = 0; index < (x_ + 1) - endOffset; index++) {
+                row.push({ "x": x_ - index, "y": index + y_ })
+            }
+
+            if (x_ < rows - 1) x_++
+            else if (y_ < columns - 1) y_++
+
+            if (y_ > columns - rows) endOffset++
+
+            drawArray.push(row)
+        }
+
+        /*var strRow = []
+        while (endOffset < rows) {
+            strRow = []
+            for (var index = 0; index < (x_ + 1) - endOffset; index++) {
+                strRow.push(" " + (x_ - index) + ',' + (index + y_))
+            }
+            console.log(strRow)
+            if (x_ < rows - 1) x_++
+            else if (y_ < columns - 1) y_++
+            if (y_ > columns - rows) endOffset++
+            console.log("MoverGrid.qml: " + x_ + ", " + y_ + ", " + endOffset)
+        }*/
     }
 }

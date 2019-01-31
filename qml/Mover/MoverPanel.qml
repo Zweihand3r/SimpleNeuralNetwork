@@ -12,9 +12,10 @@ ColumnLayout {
     /* In order of appearance */
     property int hoverIndex: 0
 
-    property int selectorIndex: 0
+    property int popSelectorIndex: 0
+    property real randomDensity: 0.2
 
-    property real randomDensity: 0.5
+    property bool playActive: false
 
     readonly property var selectors: [trackSelector, randomSelector]
 
@@ -113,15 +114,59 @@ ColumnLayout {
         id: playButton
         Layout.preferredWidth: 48; Layout.preferredHeight: 48
 
-        Rectangle { anchors.fill: parent; opacity: 0.5; color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1) }
+        Rectangle {
+            anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
+            color: col_prim; width: playHovery.containsMouse ? parent.width : 0; radius: 6
+            Behavior on width { NumberAnimation { duration: 40 } }
+        }
+
+        Item {
+            id: playContent; width: 32; height: 32; scale: 0.88
+            anchors { centerIn: parent; horizontalCenterOffset: 2 }
+
+            Rectangle { id: line1; x: -1; y: 7; width: 32; height: 4; radius: 2; rotation: 30; color: playHovery.containsMouse ? col_bg : col_prim }
+            Rectangle { id: line2; x: -14; y: 14; width: 32; height: 4; radius: 2; rotation: 90; color: playHovery.containsMouse ? col_bg : col_prim }
+            Rectangle { id: line3; x: -1; y: 21; width: 32; height: 4; radius: 2; rotation: -30; color: playHovery.containsMouse ? col_bg : col_prim }
+            Rectangle { id: line4; x: 28; y: 14; width: 4; height: 0; radius: 4; anchors.verticalCenter: parent.verticalCenter; color: playHovery.containsMouse ? col_bg : col_prim }
+        }
 
         MouseArea {
+            id: playHovery
             anchors.fill: parent; hoverEnabled: true
-            onEntered: function() {
-                hoverIndex = 1
-            }
+            onEntered: hoverIndex = 1; onClicked: playAction()
         }
+
+        states: [
+            State {
+                name: "stop"; when: playActive
+
+                PropertyChanges { target: playContent; anchors.horizontalCenterOffset: 0 }
+                PropertyChanges { target: line1; x: 0; y: 0; rotation: 0 }
+                PropertyChanges { target: line3; x: 0; y: 28; rotation: 0 }
+                PropertyChanges { target: line4; height: 32 }
+            }
+        ]
+
+        transitions: [
+            Transition {
+                from: ""; to: "stop"; reversible: true
+                NumberAnimation {
+                    duration: 80; easing.type: Easing.OutQuad
+                    properties: "x, y, height, width, rotation, anchors.horizontalCenterOffset"
+                }
+            }
+        ]
     }
+
+    /*Item {
+        id: networkButton
+        Layout.preferredWidth: 48; Layout.preferredHeight: 48
+
+        Image {
+            anchors { fill: parent; margins: 8 }
+            source: 'qrc:/assets/Images/Neural_Brain.png'
+        }
+    }*/
 
     Component.onCompleted: function() {
         trackSelector.setModel([
@@ -140,7 +185,7 @@ ColumnLayout {
         selectors.forEach(function(_selector, index) {
             if (selector === _selector) {
                 _selector.selected = true
-                selectorIndex = index
+                popSelectorIndex = index
             }
             else _selector.selected = false
         })
@@ -149,17 +194,29 @@ ColumnLayout {
     function getRandomised() {
         var random = []
         for (var index = 0; index < Math.pow(randomSelector.dimension, 2); index++) {
-            random.push(Math.random() > 0.5 ? 1 : 0)
+            random.push(Math.random() > randomDensity ? 0 : 1)
         }
         return random
     }
 
     function generateAction() {
-        switch (selectorIndex) {
+        switch (popSelectorIndex) {
         case 0: grid.populateTrack(); break
         case 1: grid.populateRandom(randomDensity); break
         }
 
         perp.relocate()
+    }
+
+    function playAction() {
+        if (!playActive) {
+            if (perp.crashed) perp.dropRandom()
+            startBaked()
+            playActive = true
+        }
+        else {
+            stopBaked()
+            playActive = false
+        }
     }
 }
