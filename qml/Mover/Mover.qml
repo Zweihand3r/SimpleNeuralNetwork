@@ -23,7 +23,7 @@ Item {
         }
 
         MoverPanel {
-
+            id: panel
         }
     }
 
@@ -67,9 +67,55 @@ Item {
         onTriggered: bakedLoop()
     }
 
+    Timer {
+        id: networkTimer
+        interval: 120; repeat: true
+        onTriggered: networkLoop()
+    }
+
     Component.onCompleted: function() {
         grid.create()
+
+        /* Delete later */
+        initializeNetwork()
     }
+
+    /* -------------- Network --------------- */
+
+    function startNetwork() {}
+    function stopNetwork() {}
+
+    function networkLoop() {
+        /* Train network (all surroundings regardless of movement) at every cell */
+    }
+
+    function initializeNetwork() {
+        neural.initializeNetwork(3, 1, 4)
+
+        var inputs = [
+                    "0 0 1",
+                    "0 1 1",
+                    "1 0 1",
+                    "1 1 1"
+                ]
+
+        var outputs = [
+                    "0",
+                    "1",
+                    "1",
+                    "0"
+                ]
+
+        var resTrain = neural.train(inputs, outputs, 1000)
+        console.log("Mover.qml: resTrain: " + resTrain)
+
+        /* Need a function that computes: ie only take input. */
+        /* Thats for normal neural function. For mover, train and result are needed at same time */
+
+        var res = neural.train(["1 0 1"], ["0"], 1)
+        console.log("Mover.qml: res: " + res)
+    }
+
 
     /* --------------- Baked ---------------- */
 
@@ -101,6 +147,8 @@ Item {
         if (prevX === perp.currentX && prevY === perp.currentY) {
             bakedTimer.stop()
             perp.crash()
+
+            panel.playActive = false
         }
     }
 

@@ -41,7 +41,10 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
                     selected: currentStackIndex === index
-                    onClicked: currentStackIndex = index
+                    onClicked: function() {
+                        currentStackIndex = index
+                        presented = false
+                    }
                 }
             }
 
