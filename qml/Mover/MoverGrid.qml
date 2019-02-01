@@ -65,6 +65,10 @@ Item {
         }
     }
 
+    function checkCurrent() {
+        return check(perp.currentX, perp.currentY)
+    }
+
     function check(x, y) {
         if (x < 0 || x > rows - 1) return true
         if (y < 0 || y > columns - 1) return true
@@ -104,29 +108,72 @@ Item {
         populateTrack()
     }
 
-    function populateTrack() {
+    function populateTrack(trackIndex) {
         fillPopulation(true)
 
-        /*for (var i = 0; i < rows; i++) {
-            for (var j = 0; j < columns; j++) {
-                if ((i === 1 || i === rows - 2) && j > 3 && j < columns - 4) {
-                    population[i][j] = false
-                }
-                else if ((j === 1 || j === columns - 2) && i > 3 && i < rows - 4) {
-                    population[i][j] = false
-                }
-            }
-        }*/
+        if (trackIndex === undefined) trackIndex = 0
 
-        for (var i = 0; i < rows; i++) {
-            for (var j = 0; j < columns; j++) {
-                if ((i === 1 || i === rows - 2) && j > 0 && j < columns - 1) {
-                    population[i][j] = false
-                }
-                else if ((j === 1 || j === columns - 2) && i > 0 && i < rows - 1) {
-                    population[i][j] = false
+        switch (trackIndex) {
+        case 0:
+            for (var i = 0; i < rows; i++) {
+                for (var j = 0; j < columns; j++) {
+                    if ((i === 1 || i === rows - 2) && j > 0 && j < columns - 1) {
+                        population[i][j] = false
+                    }
+                    else if ((j === 1 || j === columns - 2) && i > 0 && i < rows - 1) {
+                        population[i][j] = false
+                    }
                 }
             }
+            break
+
+        case 1:
+            for (i = 0; i < rows; i++) {
+                for (j = 0; j < columns; j++) {
+                    if ((i === 1 || i === rows - 2) && j > 5 && j < columns - 6) {
+                        population[i][j] = false
+                    }
+                    else if ((j === 1 || j === columns - 2) && i > 5 && i < rows - 6) {
+                        population[i][j] = false
+                    }
+                }
+            }
+
+            var x = 6; var y = 1
+            while (x > 1) {
+                y += 1
+                population[x][y] = false
+                x -= 1
+                population[x][y] = false
+            }
+
+            x = 1; y = 25
+            while (x < 6) {
+                x += 1
+                population[x][y] = false
+                y += 1
+                population[x][y] = false
+            }
+
+            x = 10; y = 30
+            while (x < 15) {
+                console.log("MoverGrid.qml: xy: " + x + ", " + y)
+                y -= 1
+                population[x][y] = false
+                x += 1
+                population[x][y] = false
+            }
+
+            x = 15; y = 6
+            while (x > 10) {
+                console.log("MoverGrid.qml: xy: " + x + ", " + y)
+                x -= 1
+                population[x][y] = false
+                y -= 1
+                population[x][y] = false
+            }
+
+            break
         }
 
         setDrawArray()
