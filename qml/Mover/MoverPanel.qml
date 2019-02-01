@@ -13,9 +13,13 @@ ColumnLayout {
     property int hoverIndex: 0
 
     property int popSelectorIndex: 0
+
+    property int trackIndex: 0
     property real randomDensity: 0.2
 
     property bool playActive: false
+
+    property bool bakedMover: false
 
     readonly property var selectors: [trackSelector, randomSelector]
 
@@ -59,7 +63,12 @@ ColumnLayout {
                     CellSelector {
                         id: trackSelector
                         selected: true
-                        onClicked: cellSelectionHandler(this)
+                        onClicked: function() {
+                            if (selected) {
+                                trackIndex = trackIndex === 0 ? 1 : 0
+                                setModel(getTrack())
+                            } else cellSelectionHandler(this)
+                        }
                     }
 
                     CellSelector {
@@ -68,14 +77,8 @@ ColumnLayout {
                             if (selected) {
                                 if (randomDensity > 0.4) randomDensity = 0.1
                                 else randomDensity += 0.1
-
-                                var model = []
-                                for (var index = 0; index < Math.pow(dimension, 2); index++) {
-                                    model.push(Math.random() > randomDensity ? 0 : 1)
-                                }
-                                setModel(model)
-                            }
-                            else cellSelectionHandler(this)
+                                setModel(getRandomised())
+                            } else cellSelectionHandler(this)
                         }
                     }
                 }
@@ -169,16 +172,34 @@ ColumnLayout {
     }*/
 
     Component.onCompleted: function() {
-        trackSelector.setModel([
-                                   1, 1, 1, 1, 1, 1,
-                                   1, 0, 0, 0, 0, 1,
-                                   1, 0, 1, 1, 0, 1,
-                                   1, 0, 1, 1, 0, 1,
-                                   1, 0, 0, 0, 0, 1,
-                                   1, 1, 1, 1, 1, 1
-                               ])
-
+        trackSelector.setModel(getTrack())
         randomSelector.setModel(getRandomised())
+    }
+
+    function playAction() {
+        if (!playActive) {
+            if (bakedMover) {
+                if (perp.crashed) perp.reorient()
+                startBaked()
+            } else startNetwork()
+
+            playActive = true
+        }
+        else {
+            if (bakedMover) stopBaked()
+            else stopNetwork()
+            playActive = false
+        }
+    }
+
+    function generateAction() {
+        switch (popSelectorIndex) {
+        case 0: grid.populateTrack(trackIndex); break
+        case 1: grid.populateRandom(randomDensity); break
+        }
+
+        perp.relocate()
+        setOrigin()
     }
 
     function cellSelectionHandler(selector) {
@@ -193,30 +214,29 @@ ColumnLayout {
 
     function getRandomised() {
         var random = []
-        for (var index = 0; index < Math.pow(randomSelector.dimension, 2); index++) {
+        for (var index = 0; index < Math.pow(randomSelector.rows, randomSelector.columns, 2); index++) {
             random.push(Math.random() > randomDensity ? 0 : 1)
         }
         return random
     }
 
-    function generateAction() {
-        switch (popSelectorIndex) {
-        case 0: grid.populateTrack(); break
-        case 1: grid.populateRandom(randomDensity); break
-        }
+    function getTrack() {
+        switch (trackIndex) {
+        case 0: return [
+                    1, 1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 1,
+                    1, 0, 1, 1, 1, 0, 1,
+                    1, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1
+                ]
 
-        perp.relocate()
-    }
-
-    function playAction() {
-        if (!playActive) {
-            if (perp.crashed) perp.dropRandom()
-            startBaked()
-            playActive = true
-        }
-        else {
-            stopBaked()
-            playActive = false
+        case 1: return [
+                    1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 0, 0, 0, 1, 1,
+                    1, 0, 0, 1, 0, 0, 1,
+                    1, 1, 0, 0, 0, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1
+                ]
         }
     }
 }

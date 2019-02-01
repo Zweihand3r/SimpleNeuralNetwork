@@ -12,8 +12,8 @@ Item {
      */
     property int orientation: 2
 
-    property int currentX: 0
-    property int currentY: 0
+    property int currentX: 1
+    property int currentY: 1
 
     property int crashIndex: 0
 
@@ -27,8 +27,10 @@ Item {
     readonly property var parts: ["head", "neck", "body", "feet"]
     readonly property int moveDuration: 120
 
+    signal crashAnimCompleted()
+
     Item {
-        id: perp_feet; width: 24; height: 24
+        id: perp_feet; x: 24; y: 24; width: 24; height: 24
         Rectangle { anchors.centerIn: parent; width: 14; height: 14; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
@@ -36,7 +38,7 @@ Item {
     }
 
     Item {
-        id: perp_body; width: 24; height: 24
+        id: perp_body; x: 24; y: 24; width: 24; height: 24
         Rectangle { anchors.centerIn: parent; width: 16; height: 16; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
@@ -44,7 +46,7 @@ Item {
     }
 
     Item {
-        id: perp_neck; width: 24; height: 24
+        id: perp_neck; x: 24; y: 24; width: 24; height: 24
         Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
@@ -52,7 +54,7 @@ Item {
     }
 
     Item {
-        id: perp_head; width: 24; height: 24
+        id: perp_head; x: 24; y: 24; width: 24; height: 24
         Rectangle { anchors.centerIn: parent; width: 20; height: 20; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
@@ -80,6 +82,12 @@ Item {
         id: crashTimer
         repeat: true; interval: moveDuration
         onTriggered: crashLoop()
+    }
+
+    Timer {
+        id: crashAnimFinishTimer
+        interval: moveDuration
+        onTriggered: rootPerp.crashAnimCompleted()
     }
 
 
@@ -126,6 +134,33 @@ Item {
         case 1: return down(currentX, currentY)
         case 2: return left(currentX, currentY)
         case 3: return up(currentX, currentY)
+        }
+    }
+
+    function forceFwd() {
+        switch (orientation) {
+        case 0: up_forced(currentX, currentY); break
+        case 1: right_forced(currentX, currentY); break
+        case 2: down_forced(currentX, currentY); break
+        case 3: left_forced(currentX, currentY); break
+        }
+    }
+
+    function forceLeft() {
+        switch (orientation) {
+        case 0: left_forced(currentX, currentY); break
+        case 1: up_forced(currentX, currentY); break
+        case 2: right_forced(currentX, currentY); break
+        case 3: down_forced(currentX, currentY); break
+        }
+    }
+
+    function forceRight() {
+        switch (orientation) {
+        case 0: right_forced(currentX, currentY); break
+        case 1: down_forced(currentX, currentY); break
+        case 2: left_forced(currentX, currentY); break
+        case 3: up_forced(currentX, currentY); break
         }
     }
 
@@ -195,21 +230,21 @@ Item {
         console.log("MoverPerp.qml: forced moved up")
     }
 
-    function right_forced() {
+    function right_forced(x, y) {
         move(x, y + 1)
         orientation = 1
         console.log("MoverPerp.qml: forced moved right")
     }
 
-    function down_forced() {
+    function down_forced(x, y) {
         move(x + 1, y)
         orientation = 2
         console.log("MoverPerp.qml: forced moved down")
     }
 
-    function left_forced() {
-        move(x + 1, y)
-        orientation = 2
+    function left_forced(x, y) {
+        move(x, y - 1)
+        orientation = 3
         console.log("MoverPerp.qml: forced moved down")
     }
 
@@ -223,8 +258,14 @@ Item {
             crashIndex += 1
         } else {
             crashTimer.stop()
-            console.log("MoverPerp.qml: Perp crashed")
+            crashAnimFinishTimer.start()
         }
+    }
+
+    function crashFinisher() {
+        crashed = true
+        rootPerp.crashAnimCompleted()
+        console.log("MoverPerp.qml: Perp crashed")
     }
 
     function dropRandom() {
@@ -238,5 +279,10 @@ Item {
         if (grid.check(currentX, currentY)) {
             dropRandom()
         } else drop(currentX, currentY, orientation)
+    }
+
+    function reorient() {
+        if (orientation < 3) orientation += 1
+        else orientation = 0
     }
 }
