@@ -1,0 +1,57 @@
+import QtQuick 2.7
+
+Item {
+    id: rootSwitch
+    implicitWidth: 144
+    implicitHeight: 36
+    clip: true
+
+    property color _col_prim: col_prim
+    property color _col_bg: col_bg
+
+    property color color_off: col_prim_dim
+
+    property string text: "Switch"
+
+    property int fontSize: height / 2
+    property int contentMargin: 4
+
+    property bool checked: false
+
+    Text {
+        id: switchText
+        text: rootSwitch.text; color: _col_prim; font.pixelSize: fontSize; anchors {
+            left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: contentMargin
+        }
+    }
+
+    MouseArea {
+        id: switchClicky
+        width: 48; hoverEnabled: true; anchors {
+            top: parent.top; right: parent.right; bottom: parent.bottom
+        }
+
+        onClicked: checked = !checked
+
+        Rectangle {
+            width: 30; height: 20; anchors.centerIn: parent
+            clip: true; radius: height / 2; border {
+                width: 2; color: _col_prim
+            } color: switchClicky.containsMouse ? _col_prim : "transparent"
+            Behavior on color { ColorAnimation { duration: 120 }}
+
+            Item {
+                anchors { fill: parent; margins: 4 }
+
+                Rectangle {
+                    x: checked ? parent.width - width : 0
+                    color: checked ? (switchClicky.containsMouse ? _col_bg : _col_prim) : color_off
+                    width: height; height: parent.height; radius: height / 2
+
+                    Behavior on x { NumberAnimation { duration: 64 }}
+                    Behavior on color { ColorAnimation { duration: 120 }}
+                }
+            }
+        }
+    }
+}

@@ -16,6 +16,10 @@ public:
     explicit Neural(QObject *parent = nullptr);
 
 private:
+    int m_inputCount;
+    int m_outputCount;
+    int m_nodeCount;
+
     QVector<QVector<float>> syn0;
     QVector<QVector<float>> syn1;
 
@@ -31,10 +35,11 @@ private:
 signals:
 
 public slots:
-    void initializeNetwork(const int inputCount, const int outputCount, const int nodeCount);
+    void initializeNetwork(const int inputCount, const int outputCount, const int nodeCount = 4);
     void resetNetwork();
 
-    QStringList train(QStringList inputs, QStringList outputs, const int trainSteps);
+    QStringList train(QStringList inputs, QStringList outputs, const int trainSteps = 1);
+    QStringList compute(QStringList inputs);
 
     /* ---^--- */
     QVector<QVector<float>> getSigmoid(QVector<QVector<float>> mat);
