@@ -8,6 +8,7 @@ ColumnLayout {
     /* width: 48 */
 
     property bool gridHovered: hoverIndex === 0 && input.withinBounds
+    property bool networkHovered: hoverIndex === 2 && input.withinBounds
 
     /* In order of appearance */
     property int hoverIndex: 0
@@ -29,7 +30,7 @@ ColumnLayout {
         Rectangle { anchors { fill: gridContainer; margins: -4 } radius: 10; color: col_bg }
 
         Item {
-            id: bounds
+            id: gridBounds
             height: gridContent.height; width: parent.width + gridContent.width
             anchors { right: parent.right; verticalCenter: parent.verticalCenter }
         }
@@ -104,18 +105,18 @@ ColumnLayout {
         MouseArea {
             id: gridHovery; anchors.fill: parent; hoverEnabled: true
             onEntered: function() {
-                var globalOrigin = bounds.mapToItem(rootContent, bounds.x, bounds.y)
+                var globalOrigin = gridBounds.mapToItem(rootContent, gridBounds.x, gridBounds.y)
 
                 hoverIndex = 0
                 input.checkBounds = true
-                input.setBounds(Qt.rect(globalOrigin.x - bounds.x, globalOrigin.y - bounds.y, bounds.width, bounds.height))
+                input.setBounds(Qt.rect(globalOrigin.x - gridBounds.x, globalOrigin.y - gridBounds.y, gridBounds.width, gridBounds.height))
             }
         }
     }
 
     Item {
         id: playButton
-        Layout.preferredWidth: 48; Layout.preferredHeight: 48
+        Layout.preferredWidth: 48; Layout.preferredHeight: 48; z: 1
 
         Rectangle {
             anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
@@ -161,15 +162,87 @@ ColumnLayout {
         ]
     }
 
-    /*Item {
+    Item {
         id: networkButton
-        Layout.preferredWidth: 48; Layout.preferredHeight: 48
+        Layout.preferredWidth: 48; Layout.preferredHeight: 48; z: 0
+        Rectangle { anchors { fill: networkContainer; margins: -4 } radius: 10; color: col_bg }
 
-        Image {
-            anchors { fill: parent; margins: 8 }
-            source: 'qrc:/assets/Images/Neural_Brain.png'
+        Item {
+            id: networkBounds
+            height: networkContent.height; width: parent.width + networkContent.width
+            anchors { right: parent.right; verticalCenter: parent.verticalCenter }
         }
-    }*/
+
+        Item {
+            id: networkContainer; clip: true
+            height: networkContent.height; width: (networkHovered ? parent.width + networkContent.width : 0)
+            anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+            Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+            Rectangle { /* Icon bg */
+                anchors { right: parent.right; verticalCenter: parent.verticalCenter }
+                color: col_prim; width: parent.width + 6; height: networkButton.height; radius: 6
+            }
+
+            Rectangle { /* Content bg */
+                width: networkContent.width; height: networkContent.height; radius: 6
+                anchors { right: parent.right; rightMargin: 48 } color: col_prim
+            }
+
+            ColumnLayout {
+                id: networkContent
+                opacity: networkHovered ? 1 : 0
+                anchors { right: parent.right; rightMargin: 48 }
+                Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+
+                Component.onCompleted: {
+                    console.log("MoverPanel.qml: " + width + ", " + height)
+                }
+
+                ColumnLayout {
+                    Layout.fillWidth: true; Layout.topMargin: 4; spacing: 0
+
+                    Repeater {
+                        model: ListModel {
+                            ListElement { _text: "Use Baked Network"; _id: "useBaked" }
+                            ListElement { _text: "Train Only On Crash"; _id: "trainOnCrash" }
+                        }
+
+                        Switch_ {
+                            id: useBakedSwitch
+                            Layout.preferredWidth: 242; Layout.preferredHeight: 32
+                            _col_prim: col_bg; _col_bg: col_prim; text: _text; contentMargin: 8; fontSize: 18
+                            onCheckedChanged: networkSwitchHandler(_id, checked)
+                        }
+                    }
+                }
+
+                Button_ {
+                    id: wipeButton
+                    Layout.preferredWidth: 64; Layout.fillWidth: true
+                    text: "Wipe Network"; _col_prim: col_bg; _col_bg: col_prim
+                    Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.bottomMargin: 8
+                }
+            }
+        }
+
+        Image_ {
+            tint: networkHovered ? col_bg : col_prim
+            source: 'qrc:/assets/Images/Icon_Network.png'
+            anchors { fill: parent; margins: 8 } fillMode: Image.Stretch
+        }
+
+        MouseArea {
+            id: networkHovery; anchors.fill: parent; hoverEnabled: true
+            onEntered: function() {
+                var globalOrigin = networkBounds.mapToItem(rootContent, networkBounds.x, networkBounds.y)
+
+                hoverIndex = 2
+                input.checkBounds = true
+                input.setBounds(Qt.rect(globalOrigin.x - networkBounds.x, globalOrigin.y - networkBounds.y, networkBounds.width, networkBounds.height))
+            }
+        }
+    }
 
     Component.onCompleted: function() {
         trackSelector.setModel(getTrack())
@@ -210,6 +283,12 @@ ColumnLayout {
             }
             else _selector.selected = false
         })
+    }
+
+    function networkSwitchHandler(id, tog) {
+        switch (id) {
+        case "useBaked": bakedMover = tog; break
+        }
     }
 
     function getRandomised() {

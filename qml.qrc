@@ -39,5 +39,6 @@
         <file>qml/Mover/MoverPanel.qml</file>
         <file>qml/Components/OptionsTitle.qml</file>
         <file>qml/Mover/CellSelector.qml</file>
+        <file>qml/Controls/Switch_.qml</file>
     </qresource>
 </RCC>

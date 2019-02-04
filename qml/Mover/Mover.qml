@@ -90,6 +90,7 @@ Item {
 
     Component.onCompleted: function() {
         grid.create()
+        initializeNetwork()
     }
 
     function setOrigin(x, y, orientation) {
@@ -115,10 +116,8 @@ Item {
         var inputs = [left + " " + fwd + " " + right]
         var outputs = [(1 - left) + " " + (1 - fwd) + " " + (1 - right)]
 
-        console.log("Mover.qml: inputs: " + inputs + " >> " + outputs)
-
-        var res = neural.train(inputs, outputs, 1)[0].split(" ")
-        console.log("Mover.qml: res- " + res)
+        var res = neural.train(inputs, outputs)[0].split(" ")
+        console.log("Mover.qml: network output - " + res)
 
         var left_net = parseFloat(res[0])
         var fwd_net = parseFloat(res[1])
@@ -126,15 +125,12 @@ Item {
 
         if (left_net > fwd_net && left_net > right_net) {
             perp.forceLeft()
-//            perp.moveLeft()
         }
         else if (fwd_net > left_net && fwd_net > right_net) {
             perp.forceFwd()
-//            perp.moveFwd()
         }
         else if (right_net > left_net && right_net > fwd_net) {
             perp.forceRight()
-//            perp.moveRight()
         }
 
         if (grid.checkCurrent()) {
@@ -145,31 +141,8 @@ Item {
 
     function initializeNetwork() {
         if (!networkInitialised) {
-            neural.initializeNetwork(3, 3, 4)
+            neural.initializeNetwork(3, 3)
             networkInitialised = true
-
-//            var inputs = [
-//                        "0 0 1",
-//                        "0 1 1",
-//                        "1 0 1",
-//                        "1 1 1"
-//                    ]
-
-//            var outputs = [
-//                        "1 1 0",
-//                        "1 0 0",
-//                        "0 1 0",
-//                        "0 0 0"
-//                    ]
-
-//            var resTrain = neural.train(inputs, outputs, 1000)
-//            console.log("Mover.qml: resTrain: " + resTrain)
-
-//            /* Need a function that computes: ie only take input. */
-//            /* Thats for normal neural function. For mover, train and result are needed at same time */
-
-//            var res = neural.train(["1 0 1"], ["0 1 0"], 1)
-//            console.log("Mover.qml: res: " + res)
         }
     }
 

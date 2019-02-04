@@ -182,6 +182,37 @@ Item {
         currentY = y
     }
 
+    function moveOutOfBounds(dir) {
+        for (var index = 3; index > 0; index--) {
+            rootPerp[parts[index]].x = rootPerp[parts[index - 1]].x
+            rootPerp[parts[index]].y = rootPerp[parts[index - 1]].y
+        }
+
+        console.log("MoverPerp.qml: Out of bounds: " + dir)
+
+        switch (dir) {
+        case "up":
+            perp_head.y = grid.cells[currentX][currentY].y - 24
+            currentX -= 1
+            break
+
+        case "right":
+            perp_head.x = grid.cells[currentX][currentY].x + 24
+            currentY += 1
+            break
+
+        case "down":
+            perp_head.y = grid.cells[currentX][currentY].y + 24
+            currentX += 1
+            break
+
+        case "left":
+            perp_head.x = grid.cells[currentX][currentY].x - 24
+            currentY -= 1
+            break
+        }
+    }
+
     function crash() {
         crashed = true
         crashIndex = 0
@@ -225,27 +256,35 @@ Item {
     }
 
     function up_forced(x, y) {
-        move(x - 1, y)
+        if (boundsCheck()) moveOutOfBounds("up")
+        else move(x - 1, y)
+
         orientation = 0
         console.log("MoverPerp.qml: forced moved up")
     }
 
     function right_forced(x, y) {
-        move(x, y + 1)
+        if (boundsCheck()) moveOutOfBounds("right")
+        else move(x, y + 1)
+
         orientation = 1
         console.log("MoverPerp.qml: forced moved right")
     }
 
     function down_forced(x, y) {
-        move(x + 1, y)
+        if (boundsCheck()) moveOutOfBounds("down")
+        else move(x + 1, y)
+
         orientation = 2
         console.log("MoverPerp.qml: forced moved down")
     }
 
     function left_forced(x, y) {
-        move(x, y - 1)
+        if (boundsCheck()) moveOutOfBounds("left")
+        else move(x, y - 1)
+
         orientation = 3
-        console.log("MoverPerp.qml: forced moved down")
+        console.log("MoverPerp.qml: forced moved left")
     }
 
     function crashLoop() {

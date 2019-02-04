@@ -120,6 +120,10 @@ QStringList Neural::toStringList(const QVector<QVector<float> > vector)
 
 void Neural::initializeNetwork(const int inputCount, const int outputCount, const int nodeCount)
 {
+    if (m_inputCount != inputCount) m_inputCount = inputCount;
+    if (m_outputCount != outputCount) m_outputCount = outputCount;
+    if (m_nodeCount != nodeCount) m_nodeCount = nodeCount;
+
     syn0 = randomisedWeights(inputCount, nodeCount);
     syn1 = randomisedWeights(nodeCount, outputCount);
 
@@ -129,13 +133,20 @@ void Neural::initializeNetwork(const int inputCount, const int outputCount, cons
 
 void Neural::resetNetwork()
 {
-
+    initializeNetwork(m_inputCount, m_outputCount, m_nodeCount);
 }
 
 QStringList Neural::train(QStringList inputs, QStringList outputs, const int trainSteps)
 {
     QVector<QVector<float>> res = train(toVector(inputs), toVector(outputs), trainSteps);
     return toStringList(res);
+}
+
+QStringList Neural::compute(QStringList inputs)
+{
+    QVector<QVector<float>> l1 = sigmoid(Matrix::dot(toVector(inputs), syn0));
+    QVector<QVector<float>> l2 = sigmoid(Matrix::dot(l1, syn1));
+    return toStringList(l2);
 }
 
 QVector<QVector<float> > Neural::getSigmoid(QVector<QVector<float> > mat)
