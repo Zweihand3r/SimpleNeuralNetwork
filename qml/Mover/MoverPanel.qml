@@ -22,6 +22,9 @@ ColumnLayout {
 
     property bool bakedMover: false
 
+    property bool trainOnCrash: false
+    property bool trainFromBaked: false
+
     readonly property var selectors: [trackSelector, randomSelector]
 
     Item {
@@ -195,24 +198,36 @@ ColumnLayout {
                 anchors { right: parent.right; rightMargin: 48 }
                 Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
 
-                Component.onCompleted: {
-                    console.log("MoverPanel.qml: " + width + ", " + height)
-                }
-
                 ColumnLayout {
                     Layout.fillWidth: true; Layout.topMargin: 4; spacing: 0
 
-                    Repeater {
-                        model: ListModel {
-                            ListElement { _text: "Use Baked Network"; _id: "useBaked" }
-                            ListElement { _text: "Train Only On Crash"; _id: "trainOnCrash" }
-                        }
+                    Switch_ {
+                        id: useBakedSwitch
+                        Layout.preferredWidth: 242; Layout.preferredHeight: 32
+                        _col_prim: col_bg; _col_bg: col_prim; text: "Use Baked Network"; contentMargin: 8; fontSize: 18
+                        onClicked: function() {
+                            if (checked) {
+                                trainTypeSwitch.setText("Train From Baked")
+                                trainTypeSwitch.checked = trainFromBaked
+                            }
+                            else {
+                                trainTypeSwitch.setText("Train Only On Crash", false)
+                                trainTypeSwitch.checked = trainOnCrash
+                            }
 
-                        Switch_ {
-                            id: useBakedSwitch
-                            Layout.preferredWidth: 242; Layout.preferredHeight: 32
-                            _col_prim: col_bg; _col_bg: col_prim; text: _text; contentMargin: 8; fontSize: 18
-                            onCheckedChanged: networkSwitchHandler(_id, checked)
+                            bakedMover = checked
+                        }
+                    }
+
+                    Switch_ {
+                        id: trainTypeSwitch
+                        Layout.preferredWidth: 242; Layout.preferredHeight: 32
+                        _col_prim: col_bg; _col_bg: col_prim; text: "Train Only On Crash"; contentMargin: 8; fontSize: 18
+                        onClicked: function() {
+                            switch (text) {
+                            case "Train From Baked": trainFromBaked = checked; break
+                            case "Train Only On Crash": trainOnCrash = checked; break
+                            }
                         }
                     }
                 }
@@ -222,6 +237,18 @@ ColumnLayout {
                     Layout.preferredWidth: 64; Layout.fillWidth: true
                     text: "Wipe Network"; _col_prim: col_bg; _col_bg: col_prim
                     Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.bottomMargin: 8
+                    onClicked: neural.resetNetwork()
+                }
+            }
+
+            MouseArea {
+                anchors { fill: networkContent; margins: 2 } hoverEnabled: true; visible: playActive
+                Rectangle { anchors.fill: parent; color: col_bg; opacity: 0.9; radius: 6 }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "Please stop the run\nto access this panel"
+                    color: col_prim; font.pixelSize: 20; horizontalAlignment: Text.AlignHCenter
                 }
             }
         }
@@ -283,12 +310,6 @@ ColumnLayout {
             }
             else _selector.selected = false
         })
-    }
-
-    function networkSwitchHandler(id, tog) {
-        switch (id) {
-        case "useBaked": bakedMover = tog; break
-        }
     }
 
     function getRandomised() {

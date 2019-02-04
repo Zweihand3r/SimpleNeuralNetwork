@@ -18,6 +18,20 @@ Item {
 
     property bool checked: false
 
+    signal clicked()
+
+    /* Anim */
+    property string setterText: "Switch"
+    property int animModifier: 1
+
+    function setText(text, animateRight) {
+        if (animateRight === undefined) animateRight = true
+        animModifier = animateRight ? 1 : -1
+
+        setterText = text
+        textChangeAnim.start()
+    }
+
     Text {
         id: switchText
         text: rootSwitch.text; color: _col_prim; font.pixelSize: fontSize; anchors {
@@ -31,7 +45,10 @@ Item {
             top: parent.top; right: parent.right; bottom: parent.bottom
         }
 
-        onClicked: checked = !checked
+        onClicked: function() {
+            checked = !checked
+            rootSwitch.clicked()
+        }
 
         Rectangle {
             width: 30; height: 20; anchors.centerIn: parent
@@ -53,5 +70,29 @@ Item {
                 }
             }
         }
+    }
+
+    SequentialAnimation {
+        id: textChangeAnim
+
+        ParallelAnimation {
+            OpacityAnimator { target: switchText; from: 1; to: 0; duration: 80 }
+            NumberAnimation {
+                target: switchText; property: "anchors.leftMargin"
+                from: contentMargin; to: contentMargin + 24 * animModifier; duration: 80
+            }
+        }
+
+        ScriptAction { script: switchText.text = setterText }
+
+        ParallelAnimation {
+            OpacityAnimator { target: switchText; from: 0; to: 1; duration: 80 }
+            NumberAnimation {
+                target: switchText; property: "anchors.leftMargin"
+                from: contentMargin - 24 * animModifier; to: contentMargin; duration: 80
+            }
+        }
+
+        ScriptAction { script: text = setterText }
     }
 }
