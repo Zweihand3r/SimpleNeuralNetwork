@@ -22,9 +22,12 @@ ColumnLayout {
 
     property bool bakedMover: false
 
-    property bool trainOnCrash: false
-    property bool trainFromBaked: false
+    property bool alternateNetwork: false
 
+    property int trainTypeIndex: 0
+    property bool trainFromBaked: true
+
+    readonly property var panelItems: [gridButton, networkButton]
     readonly property var selectors: [trackSelector, randomSelector]
 
     Item {
@@ -108,18 +111,22 @@ ColumnLayout {
         MouseArea {
             id: gridHovery; anchors.fill: parent; hoverEnabled: true
             onEntered: function() {
-                var globalOrigin = gridBounds.mapToItem(rootContent, gridBounds.x, gridBounds.y)
+                if (!input.withinBounds || hoverIndex !== 0) {
+                    var globalOrigin = gridBounds.mapToItem(rootContent, gridBounds.x, gridBounds.y)
 
-                hoverIndex = 0
-                input.checkBounds = true
-                input.setBounds(Qt.rect(globalOrigin.x - gridBounds.x, globalOrigin.y - gridBounds.y, gridBounds.width, gridBounds.height))
+                    hoverIndex = 0
+                    input.checkBounds = true
+                    input.setBounds(Qt.rect(globalOrigin.x - gridBounds.x, globalOrigin.y - gridBounds.y, gridBounds.width, gridBounds.height))
+
+                    pushItemDown(0)
+                }
             }
         }
     }
 
     Item {
         id: playButton
-        Layout.preferredWidth: 48; Layout.preferredHeight: 48; z: 1
+        Layout.preferredWidth: 48; Layout.preferredHeight: 48; z: 2
 
         Rectangle {
             anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
@@ -207,12 +214,10 @@ ColumnLayout {
                         _col_prim: col_bg; _col_bg: col_prim; text: "Use Baked Network"; contentMargin: 8; fontSize: 18
                         onClicked: function() {
                             if (checked) {
-                                trainTypeSwitch.setText("Train From Baked")
-                                trainTypeSwitch.checked = trainFromBaked
+                                trainTypeDropdown.setDropdownItems(["Baked", "None"])
                             }
                             else {
-                                trainTypeSwitch.setText("Train Only On Crash", false)
-                                trainTypeSwitch.checked = trainOnCrash
+                                trainTypeDropdown.setDropdownItems(["Every Step", "On Crash", "None"])
                             }
 
                             bakedMover = checked
@@ -220,15 +225,25 @@ ColumnLayout {
                     }
 
                     Switch_ {
-                        id: trainTypeSwitch
+                        id: altNetworkSwitch
                         Layout.preferredWidth: 242; Layout.preferredHeight: 32
-                        _col_prim: col_bg; _col_bg: col_prim; text: "Train Only On Crash"; contentMargin: 8; fontSize: 18
-                        onClicked: function() {
-                            switch (text) {
-                            case "Train From Baked": trainFromBaked = checked; break
-                            case "Train Only On Crash": trainOnCrash = checked; break
-                            }
+                        _col_prim: col_bg; _col_bg: col_prim; text: "Alternate Network"; contentMargin: 8; fontSize: 18
+//                        onClicked: alternateNetwork = !alternateNetwork
+                        onClicked: {
+                            alternateNetwork = !alternateNetwork
+                            console.log("MoverPanel.qml: altNet: " + alternateNetwork)
                         }
+                    }
+                }
+
+                Button_Dropdown {
+                    id: trainTypeDropdown
+                    dropdownItems: ["Every Step", "On Crash", "None"]
+                    text: "Training"; _col_prim: col_bg; _col_bg: col_prim
+                    Layout.preferredWidth: 64; Layout.fillWidth: true; Layout.leftMargin: 8; Layout.rightMargin: 8
+                    onDelayedClick: function() {
+                        if (bakedMover) trainFromBaked = currentIndex === 0
+                        else trainTypeIndex = currentIndex
                     }
                 }
 
@@ -262,11 +277,16 @@ ColumnLayout {
         MouseArea {
             id: networkHovery; anchors.fill: parent; hoverEnabled: true
             onEntered: function() {
-                var globalOrigin = networkBounds.mapToItem(rootContent, networkBounds.x, networkBounds.y)
+                if (!input.withinBounds || hoverIndex !== 2) {
+                    var globalOrigin = networkBounds.mapToItem(rootContent, networkBounds.x, networkBounds.y)
 
-                hoverIndex = 2
-                input.checkBounds = true
-                input.setBounds(Qt.rect(globalOrigin.x - networkBounds.x, globalOrigin.y - networkBounds.y, networkBounds.width, networkBounds.height))
+                    hoverIndex = 2
+                    input.checkBounds = true
+                    input.setBounds(Qt.rect(globalOrigin.x - networkBounds.x, globalOrigin.y - networkBounds.y - 32,
+                                            networkBounds.width, networkBounds.height + 64))
+
+                    pushItemDown(2)
+                }
             }
         }
     }
@@ -281,13 +301,21 @@ ColumnLayout {
             if (bakedMover) {
                 if (perp.crashed) perp.reorient()
                 startBaked()
-            } else startNetwork()
+            }
+            else {
+                if (alternateNetwork) startAltNetwork()
+                else startNetwork()
+            }
 
             playActive = true
         }
         else {
             if (bakedMover) stopBaked()
-            else stopNetwork()
+            else {
+                if (alternateNetwork) stopAltNetwork()
+                else stopNetwork()
+            }
+
             playActive = false
         }
     }
@@ -310,6 +338,17 @@ ColumnLayout {
             }
             else _selector.selected = false
         })
+    }
+
+    function pushItemDown(itemIndex) {
+        if (itemIndex === 0) {
+            gridButton.z = 0
+            networkButton.z = 1
+        }
+        else if (itemIndex === 2) {
+            networkButton.z = 0
+            gridButton.z = 1
+        }
     }
 
     function getRandomised() {

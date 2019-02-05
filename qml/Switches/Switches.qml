@@ -81,14 +81,35 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: forceActiveFocus()
-        visible: trainTimer.running
+        visible: true //trainTimer.running
         Rectangle { anchors.fill: parent; opacity: 0.8; color: col_bg }
 
-        ProgressBar_ {
-            id: pb
-            from: 0; to: trainBatchCount - 1
-            value: trainStepIndex
-            anchors.centerIn: parent
+        RowLayout {
+            anchors.centerIn: parent; spacing: 16
+
+            ProgressBar_ {
+                id: pb; Layout.alignment: Qt.AlignVCenter
+                from: 0; to: trainBatchCount - 1; value: trainStepIndex
+            }
+
+            MouseArea {
+                id: closeProgressClicky; hoverEnabled: true
+                Layout.preferredWidth: 24; Layout.preferredHeight: 24
+
+                Rectangle {
+                    anchors.fill: parent; radius: width / 2
+                    border { width: 2; color: col_prim }
+                    color: closeProgressClicky.containsMouse ? col_prim : "transparent"
+
+                    /* Use image lazy ahole */
+
+                    Text {
+                        anchors { centerIn: parent; horizontalCenterOffset: 1 }
+                        color: closeProgressClicky.containsMouse ? col_bg : col_prim; rotation: 45
+                        text: "+"; font { pixelSize: closeProgressClicky.containsMouse ? 21 : 19; bold: true }
+                    }
+                }
+            }
         }
     }
 
