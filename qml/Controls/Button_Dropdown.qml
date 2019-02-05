@@ -26,12 +26,21 @@ MouseArea {
     property bool expanded: containsMouse
 
     property int nextIndex: 0
+    property var newDropdownItems: []
     property int paintedWidth: { return buttonText.paintedWidth }
 
     signal delayedClick()
 
     function setCurrentIndex(index) {
         nextIndex = index
+        textChangeAnim.start()
+    }
+
+    function setDropdownItems(items, index) {
+        if (index !== undefined) nextIndex = index
+        else nextIndex = 0
+
+        newDropdownItems = items
         textChangeAnim.start()
     }
 
@@ -98,7 +107,21 @@ MouseArea {
         id: textChangeAnim
 
         OpacityAnimator { target: selectedText; from: 1; to: 0; duration: 60 }
-        ScriptAction { script: currentIndex = nextIndex }
+
+        ScriptAction {
+            script: {
+                if (newDropdownItems.length > 0) {
+                    /* Reseting current index to avoid errors */
+                    currentIndex = 0
+
+                    dropdownItems = newDropdownItems.slice()
+                    newDropdownItems = []
+                }
+
+                currentIndex = nextIndex
+            }
+        }
+
         OpacityAnimator { target: selectedText; from: 0; to: 1; duration: 60 }
         ScriptAction { script: button_dd.delayedClick() }
     }
