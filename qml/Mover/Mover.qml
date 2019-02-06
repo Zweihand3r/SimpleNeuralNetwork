@@ -13,6 +13,9 @@ Item {
     property int originY: 1
     property int originO: 2
 
+    property int moveCount: 0
+    property int crashCount: 0
+
     MoverGrid {
         id: grid; anchors {
             verticalCenter: parent.verticalCenter; left: parent.left; leftMargin: 20
@@ -25,6 +28,7 @@ Item {
         onCrashAnimCompleted: function() {
             if (panel.playActive) {
                 perp.drop(originX, originY, originO)
+                moveCount = 0
 
                 if (panel.alternateNetwork) startAltNetwork()
                 else startNetwork()
@@ -52,29 +56,6 @@ Item {
             var com = com_arr.shift()
             var res = rootMover[com].apply(this, com_arr)
             if (res !== undefined) console.log("Mover.qml: res> " + res)
-        }
-
-        TextField {
-            anchors { bottom: parent.top }
-            Keys.onUpPressed: perp.moveFwd()
-            Keys.onLeftPressed: perp.moveLeft()
-            Keys.onRightPressed: perp.moveRight()
-            Rectangle {
-                anchors { fill: parent; margins: 8 }
-                color: col_accent; visible: parent.focus
-            }
-
-            RowLayout {
-                anchors { bottom: parent.top }
-                Button {
-                    text: bakedTimer.running ? "Stop Baked" : "Start Baked"
-                    onClicked: bakedTimer.running ? bakedTimer.stop() : bakedTimer.start()
-                }
-
-                Button {
-                    text: "reset Perp"; onClicked: perp.dropRandom()
-                }
-            }
         }
     }
 
@@ -185,6 +166,8 @@ Item {
             neural.train(inputs, outputs)
         }
 
+        moveCount += 1
+
         if (grid.checkCurrent()) {
             networkTimer.stop()
             perp.crash()
@@ -217,6 +200,8 @@ Item {
         else if (right_net > left_net && right_net > fwd_net) {
             perp.forceRight()
         }
+
+        moveCount += 1
 
         if (grid.checkCurrent()) {
             networkTimer.stop()
@@ -277,6 +262,8 @@ Item {
             }
         }
 
+        moveCount += 1
+
         var outputs = [outputArray.join(" ")]
         neural.train(inputs, outputs)
 
@@ -327,6 +314,8 @@ Item {
         case 1: perp.moveFwd(); break
         case 2: perp.moveRight(); break
         }
+
+        moveCount += 1
 
         if (panel.trainFromBaked) {
             if (moveIndex >= 0) {

@@ -80,33 +80,31 @@ Item {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
+        visible: trainTimer.running
         onClicked: forceActiveFocus()
-        visible: true //trainTimer.running
         Rectangle { anchors.fill: parent; opacity: 0.8; color: col_bg }
 
         RowLayout {
-            anchors.centerIn: parent; spacing: 16
+            anchors.centerIn: parent; spacing: 28
 
             ProgressBar_ {
-                id: pb; Layout.alignment: Qt.AlignVCenter
+                id: pb
                 from: 0; to: trainBatchCount - 1; value: trainStepIndex
+                Layout.preferredWidth: 200; Layout.alignment: Qt.AlignVCenter
             }
 
             MouseArea {
                 id: closeProgressClicky; hoverEnabled: true
-                Layout.preferredWidth: 24; Layout.preferredHeight: 24
+                Layout.preferredWidth: 18; Layout.preferredHeight: 18
+                onClicked: { if (trainTimer.running) trainTimer.stop() }
 
                 Rectangle {
-                    anchors.fill: parent; radius: width / 2
-                    border { width: 2; color: col_prim }
                     color: closeProgressClicky.containsMouse ? col_prim : "transparent"
-
-                    /* Use image lazy ahole */
+                    anchors.fill: parent; radius: width / 2; border { width: 1; color: col_prim }
 
                     Text {
-                        anchors { centerIn: parent; horizontalCenterOffset: 1 }
-                        color: closeProgressClicky.containsMouse ? col_bg : col_prim; rotation: 45
-                        text: "+"; font { pixelSize: closeProgressClicky.containsMouse ? 21 : 19; bold: true }
+                        anchors { centerIn: parent; horizontalCenterOffset: 2; verticalCenterOffset: -0.5 }
+                        text: "+"; font.pixelSize: 21; rotation: 45; color: closeProgressClicky.containsMouse ? col_bg : col_prim
                     }
                 }
             }
@@ -115,8 +113,7 @@ Item {
 
     Timer {
         id: trainTimer
-        interval: 1
-        repeat: true
+        repeat: true; interval: 1
         onTriggered: trainLoop()
     }
 

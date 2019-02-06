@@ -4,7 +4,8 @@ Item {
     id: rootSwitch
     implicitWidth: 144
     implicitHeight: 36
-    clip: true
+    clip: true; opacity: enabled ? 1 : 0.5
+    Behavior on opacity { OpacityAnimator { duration: 120 }}
 
     property color _col_prim: col_prim
     property color _col_bg: col_bg
@@ -41,7 +42,7 @@ Item {
 
     MouseArea {
         id: switchClicky
-        width: 48; hoverEnabled: true; anchors {
+        width: 48; hoverEnabled: rootSwitch.enabled; anchors {
             top: parent.top; right: parent.right; bottom: parent.bottom
         }
 
