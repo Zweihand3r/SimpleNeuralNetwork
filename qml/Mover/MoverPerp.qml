@@ -215,6 +215,8 @@ Item {
 
     function crash() {
         crashed = true
+        crashCount += 1
+
         crashIndex = 0
         crashTimer.start()
     }
@@ -302,7 +304,6 @@ Item {
     }
 
     function crashFinisher() {
-        crashed = true
         rootPerp.crashAnimCompleted()
         console.log("MoverPerp.qml: Perp crashed")
     }

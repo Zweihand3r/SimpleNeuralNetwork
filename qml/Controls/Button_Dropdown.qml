@@ -5,7 +5,8 @@ MouseArea {
     id: button_dd
     implicitWidth: 144
     implicitHeight: buttonHeight + (expanded ? dropdownLt.height : 0)
-    hoverEnabled: true; clip: true
+    hoverEnabled: enabled; clip: true; opacity: enabled ? 1 : 0.5
+    Behavior on opacity { OpacityAnimator { duration: 120 }}
 
     property var dropdownItems: ["First", "Second", "Third"]
 
