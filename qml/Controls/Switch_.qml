@@ -10,12 +10,10 @@ Item {
     property color _col_prim: col_prim
     property color _col_bg: col_bg
 
-    property color color_off: col_prim_dim
-
     property string text: "Switch"
 
     property int fontSize: height / 2
-    property int contentMargin: 4
+    property int contentMargin: 0
 
     property bool checked: false
 
@@ -42,7 +40,7 @@ Item {
 
     MouseArea {
         id: switchClicky
-        width: 48; hoverEnabled: rootSwitch.enabled; anchors {
+        width: 30; hoverEnabled: rootSwitch.enabled; anchors {
             top: parent.top; right: parent.right; bottom: parent.bottom
         }
 
@@ -63,11 +61,20 @@ Item {
 
                 Rectangle {
                     x: checked ? parent.width - width : 0
-                    color: checked ? (switchClicky.containsMouse ? _col_bg : _col_prim) : color_off
+                    color: switchClicky.containsMouse ? _col_bg : _col_prim
                     width: height; height: parent.height; radius: height / 2
 
                     Behavior on x { NumberAnimation { duration: 64 }}
                     Behavior on color { ColorAnimation { duration: 120 }}
+
+                    Rectangle {
+                        anchors { fill: parent; margins: 2 }
+                        opacity: checked ? 0 : 1; radius: height / 2
+                        color: switchClicky.containsMouse ? _col_prim : _col_bg
+
+                        Behavior on color { ColorAnimation { duration: 120 }}
+                        Behavior on opacity { OpacityAnimator { duration: 120 }}
+                    }
                 }
             }
         }

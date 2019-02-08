@@ -13,8 +13,11 @@ Item {
     property int originY: 1
     property int originO: 2
 
+    property int trainCount: 0
     property int moveCount: 0
     property int crashCount: 0
+
+    property int perp_interval: 120
 
     MoverGrid {
         id: grid; anchors {
@@ -25,6 +28,7 @@ Item {
     MoverPerp {
         id: perp
         anchors.fill: grid
+        moveDuration: perp_interval
         onCrashAnimCompleted: function() {
             if (panel.playActive) {
                 perp.drop(originX, originY, originO)
@@ -61,19 +65,19 @@ Item {
 
     Timer {
         id: bakedTimer
-        interval: 120; repeat: true
+        interval: perp_interval; repeat: true
         onTriggered: bakedLoop()
     }
 
     Timer {
         id: networkTimer
-        interval: 120; repeat: true
+        interval: perp_interval; repeat: true
         onTriggered: networkLoop()
     }
 
     Timer {
         id: altNetworkTimer
-        interval: 120; repeat: true
+        interval: perp_interval; repeat: true
         onTriggered: altNetworkLoop()
     }
 
@@ -95,6 +99,16 @@ Item {
         originX = x !== undefined ? x : perp.currentX
         originY = y !== undefined ? y : perp.currentY
         originO = orientation !== undefined ? orientation : perp.orientation
+    }
+
+    function resetCounters() {
+        trainCount = 0
+        moveCount = 0
+        crashCount = 0
+    }
+
+    function logMoves(inputs, out_0, out_1, out_2) {
+        panel.logMoves(inputs, out_0, out_1, out_2)
     }
 
     /* -------------- Network --------------- */
@@ -126,9 +140,9 @@ Item {
         var outputs = [(1 - left) + " " + (1 - fwd) + " " + (1 - right)]
 
         var res = neural.train(inputs, outputs)[0].split(" ")
-        console.log("Mover.qml: stepLoop > network output - " + res)
+        console.log("Mover.qml: stepLoop > for [" + inputs + "] network output - " + res)
 
-        forceMover(res)
+        forceMover(res, inputs)
     }
 
     function crashLoop() {
@@ -138,7 +152,7 @@ Item {
 
         var inputs = [left + " " + fwd + " " + right]
         var res = neural.compute(inputs)[0].split(" ")
-        console.log("Mover.qml: crashLoop > network output - " + res)
+        console.log("Mover.qml: crashLoop > for [" + inputs + "] network output - " + res)
 
         var left_net = parseFloat(res[0])
         var fwd_net = parseFloat(res[1])
@@ -163,7 +177,11 @@ Item {
             console.log("Mover.qml: Crash imminent. Training network")
 
             var outputs = [(1 - left) + " " + (1 - fwd) + " " + (1 - right)]
+
             neural.train(inputs, outputs)
+            logMoves(inputs, left_net, fwd_net, right_net)
+
+            trainCount += 1
         }
 
         moveCount += 1
@@ -181,12 +199,12 @@ Item {
 
         var inputs = [left + " " + fwd + " " + right]
         var res = neural.compute(inputs)[0].split(" ")
-        console.log("Mover.qml: computeLoop > network output - " + res)
+        console.log("Mover.qml: computeLoop > for [" + inputs + "] network output - " + res)
 
-        forceMover(res)
+        forceMover(res, inputs)
     }
 
-    function forceMover(res) {
+    function forceMover(res, inputs) {
         var left_net = parseFloat(res[0])
         var fwd_net = parseFloat(res[1])
         var right_net = parseFloat(res[2])
@@ -201,6 +219,9 @@ Item {
             perp.forceRight()
         }
 
+        logMoves(inputs, left_net, fwd_net, right_net)
+
+        trainCount += 1
         moveCount += 1
 
         if (grid.checkCurrent()) {
@@ -221,7 +242,7 @@ Item {
 
         var inputs = [left + " " + fwd + " " + right]
         var res = neural.compute(inputs)[0].split(" ")
-        console.log("Mover.qml: altNetworkLoop > network output - " + res)
+        console.log("Mover.qml: altNetworkLoop > for [" + inputs + "] network output - " + res)
 
         var left_net = parseFloat(res[0])
         var fwd_net = parseFloat(res[1])
@@ -262,6 +283,9 @@ Item {
             }
         }
 
+        logMoves(inputs, left_net, fwd_net, right_net)
+
+        trainCount += 1
         moveCount += 1
 
         var outputs = [outputArray.join(" ")]
@@ -328,8 +352,12 @@ Item {
                 }
                 else outputs = [(left ? 1 : 0) + " " + (fwd ? 1 : 0) + " " + (right ? 1 : 0)]
 
-                var res = neural.train(inputs, outputs)
+                var res = neural.train(inputs, outputs)[0].split(" ")
                 console.log("Mover.qml: At moveIndex " + moveIndex + ", trained res: " + res)
+
+                logMoves(inputs, parseFloat(res[0]), parseFloat(res[1]), parseFloat(res[2]))
+
+                trainCount += 1
             }
         }
     }

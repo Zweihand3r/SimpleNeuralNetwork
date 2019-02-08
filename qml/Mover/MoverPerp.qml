@@ -15,23 +15,24 @@ Item {
     property int currentX: 1
     property int currentY: 1
 
+    property int moveDuration: 120
+
     property int crashIndex: 0
 
     property bool crashed: false
 
-    property Item head: perp_head
-    property Item neck: perp_neck
-    property Item body: perp_body
-    property Item feet: perp_feet
+    readonly property Item head: perp_head
+    readonly property Item neck: perp_neck
+    readonly property Item body: perp_body
+    readonly property Item feet: perp_feet
 
     readonly property var parts: ["head", "neck", "body", "feet"]
-    readonly property int moveDuration: 120
 
     signal crashAnimCompleted()
 
     Item {
         id: perp_feet; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 14; height: 14; radius: 2; color: col_accent }
+        Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
         Behavior on y { NumberAnimation { duration: moveDuration } }
@@ -39,7 +40,7 @@ Item {
 
     Item {
         id: perp_body; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 16; height: 16; radius: 2; color: col_accent }
+        Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
         Behavior on x { NumberAnimation { duration: moveDuration } }
         Behavior on y { NumberAnimation { duration: moveDuration } }

@@ -40,5 +40,7 @@
         <file>qml/Components/OptionsTitle.qml</file>
         <file>qml/Mover/CellSelector.qml</file>
         <file>qml/Controls/Switch_.qml</file>
+        <file>qml/Controls/Slider_.qml</file>
+        <file>qml/Mover/MoveTable.qml</file>
     </qresource>
 </RCC>

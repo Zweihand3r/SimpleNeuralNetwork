@@ -79,7 +79,8 @@ RowLayout {
                     width: parent.width
                     height: parent.width
                     radius: width / 2
-                    color: rootSwitch.switchedOn ? color_on : color_off
+                    border { width: 2; color: color_on }
+                    color: rootSwitch.switchedOn ? color_on : "transparent"
 
                     Behavior on y {
                         NumberAnimation { duration: 64; easing.type: Easing.InCubic }

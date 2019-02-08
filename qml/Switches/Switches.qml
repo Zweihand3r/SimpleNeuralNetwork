@@ -88,7 +88,7 @@ Item {
             anchors.centerIn: parent; spacing: 28
 
             ProgressBar_ {
-                id: pb
+                id: pb; Layout.preferredHeight: 18
                 from: 0; to: trainBatchCount - 1; value: trainStepIndex
                 Layout.preferredWidth: 200; Layout.alignment: Qt.AlignVCenter
             }
@@ -100,11 +100,11 @@ Item {
 
                 Rectangle {
                     color: closeProgressClicky.containsMouse ? col_prim : "transparent"
-                    anchors.fill: parent; radius: width / 2; border { width: 1; color: col_prim }
+                    anchors.fill: parent; radius: width / 2; border { width: 2; color: col_prim }
 
                     Text {
-                        anchors { centerIn: parent; horizontalCenterOffset: 2; verticalCenterOffset: -0.5 }
-                        text: "+"; font.pixelSize: 21; rotation: 45; color: closeProgressClicky.containsMouse ? col_bg : col_prim
+                        anchors { centerIn: parent; horizontalCenterOffset: 1; verticalCenterOffset: -0.5 } rotation: 45
+                        text: "+"; font { pixelSize: 19; bold: true } color: closeProgressClicky.containsMouse ? col_bg : col_prim
                     }
                 }
             }
