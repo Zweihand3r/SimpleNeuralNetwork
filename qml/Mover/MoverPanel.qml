@@ -9,7 +9,7 @@ Item {
 
     property bool gridHovered: hoverIndex === 0 && input.withinBounds
     property bool networkHovered: hoverIndex === 2 && input.withinBounds
-    property bool infoHovered: hoverIndex === 3 && input.withinBounds
+    property bool infoHovered: infoHovery.containsMouse // hoverIndex === 3 && input.withinBounds
 
     /* In order of appearance */
     property int hoverIndex: 0
@@ -30,6 +30,8 @@ Item {
 
     readonly property var panelItems: [gridButton, networkButton, infoButton]
     readonly property var selectors: [trackSelector, randomSelector]
+
+    function logMoves(inputs, out_0, out_1, out_2) { moveTable.setMoves(inputs, out_0, out_1, out_2) }
 
     ColumnLayout {
         id: layout; anchors.centerIn: parent
@@ -191,7 +193,7 @@ Item {
                 id: networkContainer; clip: true
                 height: networkContent.height; width: (networkHovered ? parent.width + networkContent.width : 0)
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+                Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutQuad }}
 
                 Rectangle { /* Icon bg */
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
@@ -207,15 +209,16 @@ Item {
                     id: networkContent
                     opacity: networkHovered ? 1 : 0
                     anchors { right: parent.right; rightMargin: 48 }
-                    Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+                    Behavior on opacity { OpacityAnimator { duration: 160; easing.type: Easing.OutQuad } }
 
                     ColumnLayout {
-                        Layout.fillWidth: true; Layout.topMargin: 4; spacing: 0
+                        Layout.fillWidth: true; spacing: 0
+                        Layout.topMargin: 4; Layout.leftMargin: 8; Layout.rightMargin: 8
 
                         Switch_ {
                             id: useBakedSwitch
                             Layout.preferredWidth: 242; Layout.preferredHeight: 32
-                            _col_prim: col_bg; _col_bg: col_prim; text: "Use Baked Network"; contentMargin: 8; fontSize: 18
+                            _col_prim: col_bg; _col_bg: col_prim; text: "Use Baked Network"; fontSize: 18
                             onClicked: function() {
                                 if (checked) trainTypeDropdown.setDropdownItems(["Baked", "None"], trainFromBaked ? 0 : 1)
                                 else trainTypeDropdown.setDropdownItems(["Every Step", "On Crash", "None"], trainTypeIndex)
@@ -227,8 +230,30 @@ Item {
                         Switch_ {
                             id: altNetworkSwitch
                             Layout.preferredWidth: 242; Layout.preferredHeight: 32
-                            _col_prim: col_bg; _col_bg: col_prim; text: "Alternate Network"; contentMargin: 8; fontSize: 18
+                            _col_prim: col_bg; _col_bg: col_prim; text: "Alternate Network"; fontSize: 18
                             onClicked: alternateNetwork = !alternateNetwork
+                        }
+
+                        RowLayout {
+                            Layout.preferredWidth: 242; Layout.preferredHeight: 32
+
+                            Text {
+                                id: switchText
+                                Layout.alignment: Qt.AlignVCenter
+                                text: "Speed"; color: col_bg; font.pixelSize: 18
+                            }
+
+                            Item { Layout.preferredWidth: 20 }
+
+                            Slider_ {
+                                _col_prim: col_bg; _col_bg: col_prim
+                                Layout.fillWidth: true; Layout.preferredHeight: 20
+                                onValueChanged: function() {
+                                    perp_interval = (1 - value) * 300 + 60
+                                }
+
+                                Component.onCompleted: setValue(0.8)
+                            }
                         }
                     }
 
@@ -249,7 +274,11 @@ Item {
                         Layout.preferredWidth: 64; Layout.fillWidth: true
                         text: "Wipe Network"; _col_prim: col_bg; _col_bg: col_prim
                         Layout.leftMargin: 8; Layout.rightMargin: 8; Layout.bottomMargin: 8
-                        onClicked: neural.resetNetwork()
+                        onClicked: function() {
+                            resetCounters()
+                            moveTable.wipe()
+                            neural.resetNetwork()
+                        }
                     }
                 }
 
@@ -303,7 +332,7 @@ Item {
                 id: infoContainer; clip: true
                 height: infoContent.height; width: (infoHovered ? parent.width + infoContent.width : 0)
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+                Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutQuad }}
 
                 Rectangle { /* Icon bg */
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
@@ -315,38 +344,72 @@ Item {
                     anchors { right: parent.right; rightMargin: 48 } color: col_prim
                 }
 
-                ColumnLayout {
+                RowLayout {
                     id: infoContent
-                    width: 170; opacity: infoHovered ? 1 : 0
+                    opacity: infoHovered ? 1 : 0
                     anchors { right: parent.right; rightMargin: 48 }
-                    Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+                    Behavior on opacity { OpacityAnimator { duration: 180; easing.type: Easing.OutQuad } }
 
-                    Text {
-                        color: col_bg; font.pixelSize: 18
-                        Layout.fillWidth: true; Layout.topMargin: 8; lineHeight: 0.8
-                        text: "Moved " + moveCount + "\nsquares since last\ncrash"
-                        horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                    MoveTable {
+                        id: moveTable
+                        Layout.leftMargin: empty ? 0 : 12
                     }
 
-                    RowLayout {
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.topMargin: 6; Layout.bottomMargin: 3
+                    ColumnLayout {
+                        visible: !moveTable.empty
+                        Layout.alignment: Qt.AlignVCenter; Layout.leftMargin: 16
 
-                        Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                        Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 64; color: col_bg; Layout.leftMargin: 2.5 }
                         Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_bg }
-                        Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                        Rectangle { Layout.preferredWidth: 1; Layout.preferredHeight: 64; color: col_bg; Layout.leftMargin: 2.5 }
                     }
 
-                    Text {
-                        Layout.fillWidth: true; Layout.bottomMargin: -8
-                        text: "Crashed a total of"; color: col_bg; font.pixelSize: 18
-                        horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
-                    }
+                    ColumnLayout {
+                        Layout.preferredWidth: 170
 
-                    RowLayout {
-                        Layout.alignment: Qt.AlignHCenter; Layout.bottomMargin: 8
-                        Text { text: crashCount; color: "red"; font.pixelSize: 18 }
-                        Text { text: "times"; color: col_bg; font.pixelSize: 18 }
+                        Text {
+                            color: col_bg; font.pixelSize: 18
+                            text: "Trained a total of\n" + trainCount + " times"
+                            Layout.fillWidth: true; Layout.topMargin: 8; lineHeight: 0.8
+                            horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.topMargin: 6; Layout.bottomMargin: 3
+
+                            Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_bg }
+                            Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                        }
+
+                        Text {
+                            color: col_bg; font.pixelSize: 18
+                            Layout.fillWidth: true; lineHeight: 0.8
+                            text: "Moved " + moveCount + "\nsquares since last\ncrash"
+                            horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.topMargin: 8; Layout.bottomMargin: 3
+
+                            Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                            Rectangle { Layout.preferredHeight: 6; Layout.preferredWidth: 6; rotation: 45; color: col_bg }
+                            Rectangle { Layout.preferredWidth: 44; Layout.preferredHeight: 1; color: col_bg }
+                        }
+
+                        Text {
+                            Layout.fillWidth: true; Layout.bottomMargin: -9
+                            text: "Crashed a total of"; color: col_bg; font.pixelSize: 18
+                            horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter; Layout.bottomMargin: 8
+                            Text { text: crashCount; color: "red"; font.pixelSize: 18 }
+                            Text { text: "times"; color: col_bg; font.pixelSize: 18 }
+                        }
                     }
                 }
             }
@@ -358,7 +421,7 @@ Item {
                 }
 
                 Text {
-                    text: moveCount
+                    text: formatCount(moveCount)
                     color: infoHovered ? col_bg : col_prim
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -452,6 +515,17 @@ Item {
             random.push(Math.random() > randomDensity ? 0 : 1)
         }
         return random
+    }
+
+    function formatCount(count) {
+        var countStr = count.toString()
+        if (countStr.length > 6) {
+            countStr = countStr.substring(0, countStr.length - 6) + "M"
+        } else if (countStr.length > 4) {
+            countStr = countStr.substring(0, countStr.length - 3) + "K"
+        }
+
+        return countStr
     }
 
     function getTrack() {
