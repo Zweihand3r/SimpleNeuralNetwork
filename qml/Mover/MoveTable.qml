@@ -28,36 +28,56 @@ GridLayout {
         }
 
         Item {
-            Layout.preferredWidth: 58; Layout.preferredHeight: 39; opacity: 0.32
+            Layout.preferredWidth: 58; Layout.preferredHeight: 39; opacity: activated ? 1 : 0.32
             Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+
+            property bool activated: false
 
             Rectangle {
                 y: 19; width: 20; height: 20; border { width: 1; color: col_bg } color: _i0 === 1 ? col_prim : col_bg
-                /*Rectangle { anchors { fill: parent; margins: 3 } color: "transparent"; border { width: 1; color: col_accent } }*/
 
                 Rectangle {
-                    width: parent.width - 8; height: width * _o0; color: col_accent
-                    anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 4 }
+                    width: parent.width - 4; height: activated ? parent.width - 4 : 0
+                    color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
+                        horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
+                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+                    Rectangle {
+                        width: parent.width - 4; height: width * _o0; color: col_accent
+                        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2 }
+                    }
                 }
             }
 
             Rectangle {
                 x: 19; width: 20; height: 20; border { width: 1; color: col_bg } color: _i1 === 1 ? col_prim : col_bg
-                /*Rectangle { anchors { fill: parent; margins: 3 } color: "transparent"; border { width: 1; color: col_accent } }*/
 
                 Rectangle {
-                    width: parent.width - 8; height: width * _o1; color: col_accent
-                    anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 4 }
+                    width: parent.width - 4; height: activated ? parent.width - 4 : 0
+                    color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
+                        horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
+                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+                    Rectangle {
+                        width: parent.width - 4; height: width * _o1; color: col_accent
+                        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2 }
+                    }
                 }
             }
 
             Rectangle {
                 x: 38; y: 19; width: 20; height: 20; border { width: 1; color: col_bg } color: _i2 === 1 ? col_prim : col_bg
-                /*Rectangle { anchors { fill: parent; margins: 3 } color: "transparent"; border { width: 1; color: col_accent } }*/
 
                 Rectangle {
-                    width: parent.width - 8; height: width * _o2; color: col_accent
-                    anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 4 }
+                    width: parent.width - 4; height: activated ? parent.width - 4 : 0
+                    color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
+                        horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
+                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+                    Rectangle {
+                        width: parent.width - 4; height: width * _o2; color: col_accent
+                        anchors { horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2 }
+                    }
                 }
             }
         }
@@ -71,14 +91,14 @@ GridLayout {
                            "_o2": out_2
                        })
 
-        movesRepeater.itemAt(map[inputKey]).opacity = 1
+        movesRepeater.itemAt(map[inputKey]).activated = true
         /*if (empty) empty = false*/
     }
 
     function wipe() {
         for (var index = 0; index < movesModel.count; index++) {
             movesModel.set(index, { "_o0": 0, "_o1": 0, "_o2": 0 })
-            movesRepeater.itemAt(index).opacity = 0.32
+            movesRepeater.itemAt(index).activated = false
         }
     }
 }

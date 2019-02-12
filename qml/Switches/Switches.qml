@@ -111,10 +111,59 @@ Item {
         }
     }
 
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        visible: visualTrainTimer.running
+        onClicked: forceActiveFocus()
+
+        Item {
+            id: container
+            width: 280; clip: true; anchors {
+                top: parent.top; right: parent.right; bottom: parent.bottom
+                topMargin: 8; rightMargin: 20; bottomMargin: 20
+            }
+
+            Rectangle { anchors.fill: parent; opacity: 0.8; color: col_bg }
+
+            RowLayout {
+                anchors.centerIn: parent; spacing: 28
+
+                ProgressBar_ {
+                    id: pb_vis; Layout.preferredHeight: 18
+                    from: 0; to: trainBatchCount - 1; value: trainStepIndex
+                    Layout.preferredWidth: 200; Layout.alignment: Qt.AlignVCenter
+                }
+
+                MouseArea {
+                    id: closeProgressClicky_vis; hoverEnabled: true
+                    Layout.preferredWidth: 18; Layout.preferredHeight: 18
+                    onClicked: { if (visualTrainTimer.running) visualTrainTimer.stop() }
+
+                    Rectangle {
+                        color: closeProgressClicky_vis.containsMouse ? col_prim : "transparent"
+                        anchors.fill: parent; radius: width / 2; border { width: 2; color: col_prim }
+
+                        Text {
+                            anchors { centerIn: parent; horizontalCenterOffset: 1; verticalCenterOffset: -0.5 } rotation: 45
+                            text: "+"; font { pixelSize: 19; bold: true } color: closeProgressClicky_vis.containsMouse ? col_bg : col_prim
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Timer {
         id: trainTimer
         repeat: true; interval: 1
         onTriggered: trainLoop()
+    }
+
+    Timer {
+        id: visualTrainTimer
+        repeat: true; interval: 10
+        onTriggered: visualTrainLoop()
     }
 
     function test() {
@@ -123,7 +172,7 @@ Item {
         weights = NeuralFunctions.train(io.inputs, io.outputs, trainBatchCount, 4)
     }
 
-    function trainNetwork() {
+    function trainNetwork(visual) {
         var io = getInputsAndOutputs()
 
         inputs = io.inputs
@@ -133,8 +182,12 @@ Item {
             weights = NeuralFunctions.initializeWeights("random", inputs[0].length, outputs[0].length, 4)
 
         trainStepIndex = 0
-        clearNetworkOutputs()
-        trainTimer.start()
+
+        if (visual) visualTrainTimer.start()
+        else {
+            clearNetworkOutputs()
+            trainTimer.start()
+        }
     }
 
     function trainLoop() {
@@ -146,6 +199,20 @@ Item {
             // Complete training
 
             trainTimer.stop()
+        }
+    }
+
+    function visualTrainLoop() {
+        if (trainStepIndex < trainBatchCount) {
+            weights = NeuralFunctions.trainStep(inputs, outputs, weights, 4)
+            trainStepIndex++
+            totalStepsTrained++
+
+            computeNetworkOutput()
+        } else {
+            // Complete visual training
+
+            visualTrainTimer.stop()
         }
     }
 
