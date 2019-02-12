@@ -81,10 +81,21 @@ Flickable {
             dropdownItems: ["10", "100",  "1000", "100000"]
         }
 
-        Button_ {
-            Layout.fillWidth: true
-            text: "Train Network"
-            onClicked: trainNetwork()
+        Item {
+            Layout.preferredWidth: parent.width; Layout.preferredHeight: 36
+
+            Button_ { // Compressed Width: 138
+                id: trainButton
+                width: outputTypeDropdown.currentIndex === 1 ? 138 : parent.width
+                text: "Train Network"; onClicked: trainNetwork()
+                Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+            }
+
+            Button_ {
+                text: "Train Visually"; width: 138; anchors {
+                    left: trainButton.right; leftMargin: 4
+                } onClicked: trainNetwork(true)
+            }
         }
 
         Button_ {
