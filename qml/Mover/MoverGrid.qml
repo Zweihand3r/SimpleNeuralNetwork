@@ -8,7 +8,7 @@ Item {
     /* Debug */
     property bool enableCheckLogs: false
 
-    property bool drawPopulation: true
+    property bool drawPopulation: !dataManager.animDisabled
 
     property int rows: 17
     property int columns: 32
@@ -28,7 +28,7 @@ Item {
     Rectangle {
         anchors { fill: parent; margins: -2 } opacity: boundsVisible ? 1 : 0
         color: "#00000000"; radius: 2; border { width: 2; color: col_prim }
-        Behavior on opacity { OpacityAnimator { duration: 120 } }
+        Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120 } }
     }
 
     Timer {

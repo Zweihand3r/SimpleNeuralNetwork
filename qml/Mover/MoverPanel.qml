@@ -51,7 +51,11 @@ Item {
                 id: gridContainer; clip: true
                 height: gridContent.height; width: (gridHovered ? parent.width + gridContent.width : 0 )
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+                Behavior on width {
+                    enabled: !dataManager.animDisabled
+                    NumberAnimation { duration: 120; easing.type: Easing.OutQuad }
+                }
 
                 Rectangle { /* Icon bg */
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
@@ -67,7 +71,11 @@ Item {
                     id: gridContent
                     opacity: gridHovered ? 1 : 0
                     anchors { right: parent.right; rightMargin: 48 }
-                    Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+
+                    Behavior on opacity {
+                        enabled: !dataManager.animDisabled
+                        OpacityAnimator { duration: 120; easing.type: Easing.OutQuad }
+                    }
 
                     GridLayout {
                         columns: 2; columnSpacing: 8
@@ -137,7 +145,7 @@ Item {
             Rectangle {
                 anchors { right: parent.right; top: parent.top; bottom: parent.bottom }
                 color: col_prim; width: playHovery.containsMouse ? parent.width : 0; radius: 6
-                Behavior on width { NumberAnimation { duration: 40 } }
+                Behavior on width { enabled: !dataManager.animDisabled; NumberAnimation { duration: 40 } }
             }
 
             Item {
@@ -169,6 +177,7 @@ Item {
 
             transitions: [
                 Transition {
+                    enabled: !dataManager.animDisabled
                     from: ""; to: "stop"; reversible: true
                     NumberAnimation {
                         duration: 80; easing.type: Easing.OutQuad
@@ -193,7 +202,7 @@ Item {
                 id: networkContainer; clip: true
                 height: networkContent.height; width: (networkHovered ? parent.width + networkContent.width : 0)
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutQuad }}
+                Behavior on width { enabled: !dataManager.animDisabled; NumberAnimation { duration: 160; easing.type: Easing.OutQuad }}
 
                 Rectangle { /* Icon bg */
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
@@ -209,7 +218,11 @@ Item {
                     id: networkContent
                     opacity: networkHovered ? 1 : 0
                     anchors { right: parent.right; rightMargin: 48 }
-                    Behavior on opacity { OpacityAnimator { duration: 160; easing.type: Easing.OutQuad } }
+
+                    Behavior on opacity {
+                        enabled: !dataManager.animDisabled
+                        OpacityAnimator { duration: 160; easing.type: Easing.OutQuad }
+                    }
 
                     ColumnLayout {
                         Layout.fillWidth: true; spacing: 0
@@ -332,7 +345,11 @@ Item {
                 id: infoContainer; clip: true
                 height: infoContent.height; width: (infoHovered ? parent.width + infoContent.width : 0)
                 anchors { right: parent.right; verticalCenter: parent.verticalCenter }
-                Behavior on width { NumberAnimation { duration: 180; easing.type: Easing.OutQuad }}
+
+                Behavior on width {
+                    enabled: !dataManager.animDisabled
+                    NumberAnimation { duration: 180; easing.type: Easing.OutQuad }
+                }
 
                 Rectangle { /* Icon bg */
                     anchors { right: parent.right; verticalCenter: parent.verticalCenter }
@@ -348,7 +365,11 @@ Item {
                     id: infoContent
                     opacity: infoHovered ? 1 : 0
                     anchors { right: parent.right; rightMargin: 48 }
-                    Behavior on opacity { OpacityAnimator { duration: 180; easing.type: Easing.OutQuad } }
+
+                    Behavior on opacity {
+                        enabled: !dataManager.animDisabled
+                        OpacityAnimator { duration: 180; easing.type: Easing.OutQuad }
+                    }
 
                     MoveTable {
                         id: moveTable

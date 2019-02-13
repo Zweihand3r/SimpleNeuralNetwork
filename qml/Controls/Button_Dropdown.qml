@@ -33,19 +33,30 @@ MouseArea {
     signal delayedClick()
 
     function setCurrentIndex(index) {
-        nextIndex = index
-        textChangeAnim.start()
+        if (dataManager.animDisabled) currentIndex = index
+        else {
+            nextIndex = index
+            textChangeAnim.start()
+        }
     }
 
     function setDropdownItems(items, index) {
-        if (index !== undefined) nextIndex = index
-        else nextIndex = 0
+        if (dataManager.animDisabled) {
+            dropdownItems = items
+            currentIndex = index
+        } else {
+            if (index !== undefined) nextIndex = index
+            else nextIndex = 0
 
-        newDropdownItems = items
-        textChangeAnim.start()
+            newDropdownItems = items
+            textChangeAnim.start()
+        }
     }
 
-    Behavior on implicitHeight { NumberAnimation { duration: 120; easing.type: Easing.InCubic } }
+    Behavior on implicitHeight {
+        enabled: !dataManager.animDisabled
+        NumberAnimation { duration: 120; easing.type: Easing.InCubic }
+    }
 
     Rectangle {
         border { color: _col_prim; width: borderWidth }
@@ -86,7 +97,7 @@ MouseArea {
                 Rectangle {
                     anchors { fill: parent; leftMargin: 4; rightMargin: 4 }
                     radius: 2; color: _col_prim; opacity: parent.containsMouse ? 1 : 0
-                    Behavior on opacity { OpacityAnimator { duration: 120 } }
+                    Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120 } }
                 }
 
                 Text {
@@ -94,7 +105,7 @@ MouseArea {
                     text: modelData ; font.pixelSize: fontSize
                     color: parent.containsMouse ? _col_bg : _col_prim
                     horizontalAlignment: Text.AlignRight; verticalAlignment: Text.AlignVCenter
-                    Behavior on color { ColorAnimation { duration: 120 }}
+                    Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
                 }
 
                 onClicked: setCurrentIndex(index)

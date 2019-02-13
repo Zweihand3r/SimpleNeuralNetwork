@@ -8,9 +8,15 @@ Item {
 
     property Themes themes: Themes {}
 
-    property int themeIndex: 0
+    property bool darkTheme: false
+    property bool animDisabled: false
+
+    /*property int themeIndex: 0*/
 
     Settings {
-        property alias themeIndex: rootDm.themeIndex
+        property alias darkTheme: rootDm.darkTheme
+        property alias animDisabled: rootDm.animDisabled
+
+        /*property alias themeIndex: rootDm.themeIndex*/
     }
 }

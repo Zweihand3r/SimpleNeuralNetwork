@@ -68,7 +68,11 @@ Item {
         id: footer
         height: 44
         anchors { left: parent.left; bottom: parent.bottom; right: parent.right }
-        Rectangle { anchors.fill: parent; color: col_bg; opacity: 0.85 }
+
+        Rectangle {
+            anchors.fill: parent; color: col_bg; opacity: 0.85
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
 
         Text {
             anchors { centerIn: parent }

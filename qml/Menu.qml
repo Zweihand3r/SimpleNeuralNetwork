@@ -15,13 +15,19 @@ Item {
     property int panelWidth: 240
     property int animDuration: 240
 
-    onPresentedChanged: delayTimer.start()
+    onPresentedChanged: function() {
+        if (dataManager.animDisabled) menuIndicator.presented = presented
+        else delayTimer.start()
+    }
 
     Item {
         id: content
         width: panelWidth; height: parent.height
 
-        Rectangle { anchors.fill: parent; color: col_prim }
+        Rectangle {
+            anchors.fill: parent; color: col_prim
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
 
         ColumnLayout {
             anchors { fill: parent; leftMargin: 0; topMargin: 12; rightMargin: 0; bottomMargin: 12 }
@@ -41,7 +47,7 @@ Item {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignTop
                     selected: currentStackIndex === index
-                    onClicked: function() {
+                    onDelayedClick: function() {
                         currentStackIndex = index
                         presented = false
                     }
@@ -50,14 +56,44 @@ Item {
 
             Item { Layout.preferredHeight: 1; Layout.fillHeight: true }
 
-            Button_Dropdown {
+            OptionsTitle {
+                Layout.alignment: Qt.AlignHCenter
+                text: "Settings"; color: col_bg; lineWidth: 40
+            }
+
+            Repeater {
+                model: ["Dark Theme", "Disable Animations"]
+
+                Switch_ {
+                    text: modelData
+                    _col_prim: col_bg; _col_bg: col_prim
+                    Layout.leftMargin: 12; Layout.rightMargin: 12
+                    Layout.fillWidth: true; Layout.alignment: Qt.AlignBottom
+
+                    checked: {
+                        switch (modelData) {
+                        case "Dark Theme": return dataManager.darkTheme
+                        case "Disable Animations": return dataManager.animDisabled
+                        }
+                    }
+
+                    onClicked: function() {
+                        switch (modelData) {
+                        case "Dark Theme": applyTheme(checked); break
+                        case "Disable Animations": dataManager.animDisabled = checked; break
+                        }
+                    }
+                }
+            }
+
+            /*Button_Dropdown {
                 id: themeDropdown; text: "Theme"
                 currentIndex: dataManager.themeIndex
                 Layout.leftMargin: 12; Layout.rightMargin: 12
                 Layout.fillWidth: true; Layout.alignment: Qt.AlignBottom
                 dropdownItems: ["Dark", "Light"]; _col_prim: col_bg; _col_bg: col_prim
                 onDelayedClick: applyTheme()
-            }
+            }*/
         }
     }
 
@@ -67,10 +103,16 @@ Item {
         onTriggered: menuIndicator.presented = presented
     }
 
-    Component.onCompleted: applyTheme()
+    Component.onCompleted: function() {
+        applyTheme(dataManager.darkTheme)
+    }
 
-    function applyTheme() {
-        theme = themeDropdown.currentItem.toLowerCase()
-        dataManager.themeIndex = themeDropdown.currentIndex
+    function applyTheme(dark) {
+        theme = dark ? "dark" : "light"
+        if (dataManager.darkTheme !== dark)
+            dataManager.darkTheme = dark
+
+        /*theme = themeDropdown.currentItem.toLowerCase()
+        dataManager.themeIndex = themeDropdown.currentIndex*/
     }
 }
