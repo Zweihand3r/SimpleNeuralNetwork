@@ -23,7 +23,7 @@ Item {
             radius: 4
             anchors { fill: parent; margins: 4 }
             color: tapable.containsMouse ? col_prim : col_bg
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
         }
 
         Rectangle {
@@ -31,7 +31,7 @@ Item {
             x: 10; y: 21
             width: 24; height: 2; radius: height / 2
             color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
         }
 
         Rectangle {
@@ -39,7 +39,7 @@ Item {
             x: 10; y: 29
             width: 24; height: 2; radius: height / 2
             color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
         }
 
         Rectangle {
@@ -47,7 +47,7 @@ Item {
             x: 10; y: 13
             width: 24; height: 2; radius: height / 2
             color: tapable.containsMouse ? col_bg : col_prim
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
         }
     }
 
@@ -75,6 +75,7 @@ Item {
 
     transitions: [
         Transition {
+            enabled: !dataManager.animDisabled
             NumberAnimation { properties: "x, y, width, height, rotation"; easing.type: Easing.InCurve; duration: 160 }
         }
     ]

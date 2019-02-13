@@ -5,7 +5,10 @@ MouseArea {
     implicitWidth: 144
     implicitHeight: 36
     hoverEnabled: true; clip: true
-    onClicked: clickHandler(mouseX, mouseY)
+    onClicked: function() {
+        if (dataManager.animDisabled) button_.delayedClick()
+        else clickHandler(mouseX, mouseY)
+    }
 
     property color _col_prim: col_prim
     property color _col_bg: col_bg
@@ -27,7 +30,7 @@ MouseArea {
     Rectangle {
         anchors { fill: parent; margins: contentMargin } radius: innerRadius
         color: _col_prim; opacity: parent.containsMouse ? 1 : 0
-        Behavior on opacity { OpacityAnimator { duration: 120 } }
+        Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120 } }
     }
     Rectangle { id: clickIndicator; visible: false; color: _col_bg; radius: width / 2; anchors.centerIn: parent }
     Rectangle { anchors.fill: parent; radius: parent.radius; color: "#00000000"; border { color: _col_prim; width: borderWidth } }
@@ -37,7 +40,7 @@ MouseArea {
         color: parent.containsMouse ? _col_bg : _col_prim; wrapMode: Text.WordWrap
         verticalAlignment: Text.AlignVCenter; horizontalAlignment: button_.horizontalAlignment
         leftPadding: 12; rightPadding: 12
-        Behavior on color { ColorAnimation { duration: 120 }}
+        Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
     }
 
     ParallelAnimation {

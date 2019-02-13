@@ -20,12 +20,17 @@ Item {
         id: clicky
         hoverEnabled: true
         anchors.fill: parent
-        onClicked: clickHandler(mouseX, mouseY)
+        onClicked: function() {
+            if (dataManager.animDisabled) {
+                rootMbt.clicked()
+                rootMbt.delayedClick()
+            } else clickHandler(mouseX, mouseY)
+        }
 
         Rectangle {
             anchors { fill: parent; margins: 2 } radius: 2
             color: col_bg; opacity: clicky.containsMouse ? 1 : 0
-            Behavior on opacity { OpacityAnimator { duration: 80 } }
+            Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 80 } }
         }
 
         Rectangle {
@@ -35,18 +40,20 @@ Item {
 
         Item {
             height: parent.height; width: 3; anchors {
-                right: parent.right; rightMargin: selected ? -1 : -10
-            }
+                right: parent.right; rightMargin: -1
+            } opacity: selected ? 1 : 0
 
-            Behavior on anchors.rightMargin { NumberAnimation { duration: 80 } }
+            Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120 } }
 
             Rectangle {
                 anchors { centerIn: parent }
                 width: 16; height: 16; color: col_prim; rotation: 45
+                Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
 
                 Rectangle {
                     anchors { centerIn: parent }
                     width: 12; height: 12; color: col_bg
+                    Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
                 }
             }
         }
@@ -61,8 +68,6 @@ Item {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             text: rootMbt.text; font { pixelSize: 21 }
             color: clicky.containsMouse ? col_prim : col_bg
-
-            Behavior on color { ColorAnimation { duration: 120 } }
         }
     }
 

@@ -54,7 +54,7 @@ Item {
             clip: true; radius: height / 2; border {
                 width: 2; color: _col_prim
             } color: switchClicky.containsMouse ? _col_prim : "transparent"
-            Behavior on color { ColorAnimation { duration: 120 }}
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
 
             Item {
                 anchors { fill: parent; margins: 4 }
@@ -64,16 +64,16 @@ Item {
                     color: switchClicky.containsMouse ? _col_bg : _col_prim
                     width: height; height: parent.height; radius: height / 2
 
-                    Behavior on x { NumberAnimation { duration: 64 }}
-                    Behavior on color { ColorAnimation { duration: 120 }}
+                    Behavior on x { enabled: !dataManager.animDisabled; NumberAnimation { duration: 64 }}
+                    Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
 
                     Rectangle {
                         anchors { fill: parent; margins: 2 }
                         opacity: checked ? 0 : 1; radius: height / 2
                         color: switchClicky.containsMouse ? _col_prim : _col_bg
 
-                        Behavior on color { ColorAnimation { duration: 120 }}
-                        Behavior on opacity { OpacityAnimator { duration: 120 }}
+                        Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+                        Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120 }}
                     }
                 }
             }

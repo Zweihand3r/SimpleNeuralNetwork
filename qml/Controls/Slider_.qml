@@ -24,7 +24,7 @@ MouseArea {
         anchors { fill: parent }
         color: highlightSlider ? _col_prim : _col_bg
         radius: height / 2; border { width: 2; color: _col_prim }
-        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
     }
 
     Rectangle {
@@ -33,7 +33,7 @@ MouseArea {
         width: handle.x + handle.width - x
         x: 4; height: 12; radius: height / 2
         anchors.verticalCenter: parent.verticalCenter
-        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
     }
 
     Item {
@@ -43,14 +43,14 @@ MouseArea {
         onXChanged: computeValue(x)
 
         Behavior on x {
-            enabled: !drag.active
+            enabled: !drag.active && !dataManager.animDisabled
             NumberAnimation { duration: 80; easing.type: Easing.OutQuad }
         }
 
         Rectangle {
             anchors { fill: parent; margins: 2 }
             color: highlightSlider ? _col_prim : _col_bg; radius: width / 2
-            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
         }
     }
 

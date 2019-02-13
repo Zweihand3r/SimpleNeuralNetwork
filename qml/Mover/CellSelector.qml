@@ -14,14 +14,14 @@ MouseArea {
     Rectangle {
         anchors.fill: parent; radius: 6
         color: selected ? col_bg : "transparent"
-        Behavior on color { ColorAnimation { duration: 80 } }
+        Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 80 } }
     }
 
     GridLayout {
         id: layout; anchors.centerIn: parent
         columns: rootCS.columns; rows: rootCS.rows
         columnSpacing: 1; rowSpacing: 1; scale: containsMouse ? 1.1 : 1
-        Behavior on scale { ScaleAnimator { duration: 80 } }
+        Behavior on scale { enabled: !dataManager.animDisabled; ScaleAnimator { duration: 80 } }
 
         Repeater {
             model: populationModel
@@ -29,7 +29,7 @@ MouseArea {
             Rectangle {
                 opacity: _alive; color: selected ? col_prim : col_bg
                 Layout.preferredWidth: 6; Layout.preferredHeight: 6
-                Behavior on opacity { OpacityAnimator { duration: 80 } }
+                Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 80 } }
             }
         }
     }
@@ -38,7 +38,7 @@ MouseArea {
         anchors { fill: layout; margins: -2 }
         color: "transparent"; scale: containsMouse ? 1.1 : 1; border {
             color: selected ? col_prim : col_bg; width: 1
-        } Behavior on scale { ScaleAnimator { duration: 80 } }
+        } Behavior on scale { enabled: !dataManager.animDisabled; ScaleAnimator { duration: 80 } }
     }
 
     ListModel {

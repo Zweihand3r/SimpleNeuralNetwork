@@ -32,34 +32,50 @@ Item {
 
     Item {
         id: perp_feet; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
-        Behavior on x { NumberAnimation { duration: moveDuration } }
-        Behavior on y { NumberAnimation { duration: moveDuration } }
+        Rectangle {
+            anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
+
+        Behavior on x { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
+        Behavior on y { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
     }
 
     Item {
         id: perp_body; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
-        Behavior on x { NumberAnimation { duration: moveDuration } }
-        Behavior on y { NumberAnimation { duration: moveDuration } }
+        Rectangle {
+            anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
+
+        Behavior on x { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
+        Behavior on y { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
     }
 
     Item {
         id: perp_neck; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent }
 
-        Behavior on x { NumberAnimation { duration: moveDuration } }
-        Behavior on y { NumberAnimation { duration: moveDuration } }
+        Rectangle {
+            anchors.centerIn: parent; width: 18; height: 18; radius: 2; color: col_accent
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
+
+        Behavior on x { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
+        Behavior on y { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
     }
 
     Item {
         id: perp_head; x: 24; y: 24; width: 24; height: 24
-        Rectangle { anchors.centerIn: parent; width: 20; height: 20; radius: 2; color: col_accent }
 
-        Behavior on x { NumberAnimation { duration: moveDuration } }
-        Behavior on y { NumberAnimation { duration: moveDuration } }
+        Rectangle {
+            anchors.centerIn: parent; width: 20; height: 20; radius: 2; color: col_accent
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 }}
+        }
+
+        Behavior on x { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
+        Behavior on y { enabled: !dataManager.animDisabled; NumberAnimation { duration: moveDuration } }
 
         /*Text { anchors.centerIn: parent; text: orientation }*/
 

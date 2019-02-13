@@ -23,7 +23,7 @@ ProgressBar {
         Item {
             id: container
             anchors { fill: parent; margins: progressMargin } visible: false
-            Rectangle { width: (rootPb.visualPosition * parent.width); height: parent.height }
+            Rectangle { width: (rootPb.visualPosition * parent.width); height: parent.height; color: _col_prim }
         }
 
         Rectangle {

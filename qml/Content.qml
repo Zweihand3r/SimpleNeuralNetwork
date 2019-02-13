@@ -36,10 +36,14 @@ Item {
         width: parent.width; height: parent.height
 
         Behavior on x {
+            enabled: !dataManager.animDisabled
             NumberAnimation { duration: menu.animDuration; easing.type: Easing.InCubic }
         }
 
-        Rectangle { anchors.fill: parent; color: col_bg }
+        Rectangle {
+            anchors.fill: parent; color: col_bg
+            Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
+        }
 
         StackLayout {
             id: contentStack
@@ -61,17 +65,22 @@ Item {
         Item {
             id: header
             width: windowWidth; height: 44
-            Rectangle { anchors.fill: parent; color: col_bg; opacity: 0.85 }
+            Rectangle {
+                anchors.fill: parent; color: col_bg; opacity: 0.85
+                Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
+            }
+
             Rectangle {
                 width: parent.width - 16; height: 1; color: col_prim; anchors {
                     bottom: parent.bottom; horizontalCenter: parent.horizontalCenter
-                }
+                } Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
             }
 
             Text {
                 anchors { centerIn: parent }
                 font.pixelSize: 25; color: col_prim
                 text: contentStack.itemAt(contentStack.currentIndex).objectName
+                Behavior on color { enabled: !dataManager.animDisabled; ColorAnimation { duration: 120 } }
             }
         }
 

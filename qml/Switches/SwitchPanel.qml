@@ -88,7 +88,11 @@ Flickable {
                 id: trainButton
                 width: outputTypeDropdown.currentIndex === 1 ? 138 : parent.width
                 text: "Train Network"; onClicked: trainNetwork()
-                Behavior on width { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+
+                Behavior on width {
+                    enabled: !dataManager.animDisabled
+                    NumberAnimation { duration: 120; easing.type: Easing.OutQuad }
+                }
             }
 
             Button_ {

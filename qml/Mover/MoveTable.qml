@@ -29,7 +29,7 @@ GridLayout {
 
         Item {
             Layout.preferredWidth: 58; Layout.preferredHeight: 39; opacity: activated ? 1 : 0.32
-            Behavior on opacity { OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
+            Behavior on opacity { enabled: !dataManager.animDisabled; OpacityAnimator { duration: 120; easing.type: Easing.OutQuad } }
 
             property bool activated: false
 
@@ -40,7 +40,7 @@ GridLayout {
                     width: parent.width - 4; height: activated ? parent.width - 4 : 0
                     color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
                         horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
-                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+                    } Behavior on height { enabled: !dataManager.animDisabled; NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
 
                     Rectangle {
                         width: parent.width - 4; height: width * _o0; color: col_accent
@@ -56,7 +56,7 @@ GridLayout {
                     width: parent.width - 4; height: activated ? parent.width - 4 : 0
                     color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
                         horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
-                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+                    } Behavior on height { enabled: !dataManager.animDisabled; NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
 
                     Rectangle {
                         width: parent.width - 4; height: width * _o1; color: col_accent
@@ -72,7 +72,7 @@ GridLayout {
                     width: parent.width - 4; height: activated ? parent.width - 4 : 0
                     color: "transparent"; border { width: 1; color: col_accent } clip: true; anchors {
                         horizontalCenter: parent.horizontalCenter; bottom: parent.bottom; bottomMargin: 2
-                    } Behavior on height { NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
+                    } Behavior on height { enabled: !dataManager.animDisabled; NumberAnimation { duration: 120; easing.type: Easing.OutQuad }}
 
                     Rectangle {
                         width: parent.width - 4; height: width * _o2; color: col_accent

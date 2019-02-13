@@ -17,7 +17,9 @@ Item {
         Rectangle {
             width: parent.width; height: parent.height
             scale: fill ? 1 : 0; color: col_prim; radius: 2
-            Behavior on scale { ScaleAnimator { duration: 80 } }
+
+            Behavior on color { enabled: !dataManager.animDisbaled; ColorAnimation { duration: 120 } }
+            Behavior on scale { enabled: !dataManager.animDisabled; ScaleAnimator { duration: 80 } }
         }
 
         /*Text {

@@ -41,6 +41,7 @@ RowLayout {
                 scale: checked ? 1 : 0
 
                 Behavior on scale {
+                    enabled: !dataManager.animDisabled
                     ScaleAnimator { duration: 64; easing.type: Easing.InCubic }
                 }
             }
@@ -63,6 +64,7 @@ RowLayout {
             opacity: selectable ? (checked ? 1 : 0.5) : 1
 
             Behavior on opacity {
+                enabled: !dataManager.animDisabled
                 OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
             }
 
@@ -83,6 +85,7 @@ RowLayout {
                     color: rootSwitch.switchedOn ? color_on : "transparent"
 
                     Behavior on y {
+                        enabled: !dataManager.animDisabled
                         NumberAnimation { duration: 64; easing.type: Easing.InCubic }
                     }
                 }
@@ -117,7 +120,7 @@ RowLayout {
                         border { width: 2; color: rootSR.color }
                         scale: userOutputDisplay.containsMouse ? 1.1 : 1
 
-                        Behavior on scale { ScaleAnimator { duration: 80 } }
+                        Behavior on scale { enabled: !dataManager.animDisabled; ScaleAnimator { duration: 80 } }
                     }
 
                     RadialGradient {
@@ -131,16 +134,19 @@ RowLayout {
                         }
 
                         Behavior on opacity {
+                            enabled: !dataManager.animDisabled
                             OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
                         }
                     }
 
                     Behavior on opacity {
+                        enabled: !dataManager.animDisabled
                         OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
                     }
                 }
 
                 Behavior on opacity {
+                    enabled: !dataManager.animDisabled
                     OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
                 }
             }
@@ -178,6 +184,7 @@ RowLayout {
                     }
 
                     Behavior on opacity {
+                        enabled: !dataManager.animDisabled
                         OpacityAnimator { duration: 120; easing.type: Easing.InCubic }
                     }
                 }
@@ -213,6 +220,7 @@ RowLayout {
                 }
 
                 Behavior on opacity {
+                    enabled: !dataManager.animDisabled
                     OpacityAnimator { duration: 64; easing.type: Easing.InCubic }
                 }
             }
