@@ -7,7 +7,6 @@ import './Scripts/Matrix.js' as Matrix
 import '../js/NeuralFunctions.js' as Nef
 
 Item {
-    anchors.fill: parent
 
     property var inputs: []
     property var outputs: []

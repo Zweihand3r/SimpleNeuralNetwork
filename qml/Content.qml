@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.3
 
 import './Switches'
 import './Mover'
+import './Settings'
 import './Components'
 
 Item {
@@ -59,6 +60,11 @@ Item {
             Mover {
                 id: mover
                 objectName: "Mover"
+            }
+
+            Settings {
+                id: settings
+                objectName: "Settings"
             }
         }
 
