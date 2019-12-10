@@ -42,5 +42,6 @@
         <file>qml/Controls/Switch_.qml</file>
         <file>qml/Controls/Slider_.qml</file>
         <file>qml/Mover/MoveTable.qml</file>
+        <file>qml/Settings/Settings.qml</file>
     </qresource>
 </RCC>

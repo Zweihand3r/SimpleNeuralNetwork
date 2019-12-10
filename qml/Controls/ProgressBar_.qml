@@ -4,7 +4,6 @@ import QtGraphicalEffects 1.0
 
 ProgressBar {
     id: rootPb
-    anchors.centerIn: parent
 
     property color _col_prim: col_prim
     property int progressMargin: 4
