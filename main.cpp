@@ -3,7 +3,7 @@
 #include <QQmlContext>
 
 #include "cpp/util/input.h"
-#include "cpp/filemanager.h"
+#include "cpp/util/filemanager.h"
 #include "cpp/neural.h"
 #include "cpp/cpptests.h"
 

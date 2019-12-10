@@ -3,10 +3,10 @@ QT += qml quick charts
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    cpp/filemanager.cpp \
     cpp/neural.cpp \
     cpp/matrix.cpp \
     cpp/cpptests.cpp \
+    cpp/util/filemanager.cpp \
     cpp/util/input.cpp
 
 RESOURCES += qml.qrc \
@@ -37,8 +37,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES +=
 
 HEADERS += \
-    cpp/filemanager.h \
     cpp/neural.h \
     cpp/matrix.h \
     cpp/cpptests.h \
+    cpp/util/filemanager.h \
     cpp/util/input.h
