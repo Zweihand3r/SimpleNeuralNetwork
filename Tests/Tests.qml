@@ -25,6 +25,10 @@ Rectangle {
 
         }
 
+        ImageClassifier {
+
+        }
+
         Interface {
 
         }
@@ -66,7 +70,7 @@ Rectangle {
             Layout.fillWidth: true
 
             Repeater {
-                model: ["Simple", "Addnetwork", "Grid", "Interface"]
+                model: ["Simple", "Addnetwork", "Grid", "ImageClassifier", "Interface"]
                 TabButton { text: modelData }
             }
         }

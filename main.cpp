@@ -6,6 +6,7 @@
 #include "cpp/util/filemanager.h"
 #include "cpp/neural.h"
 #include "cpp/cpptests.h"
+#include "cpp/pixelextractor.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +26,9 @@ int main(int argc, char *argv[])
 
     CppTests *cppTests = new CppTests(neural);
     engine.rootContext()->setContextProperty("cppTests", cppTests);
+
+    PixelExtractor *pixelExtractor = new PixelExtractor();
+    engine.rootContext()->setContextProperty("pixelExtractor", pixelExtractor);
 
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
