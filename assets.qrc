@@ -3,5 +3,6 @@
         <file>assets/Images/Neural_Brain.png</file>
         <file>assets/Images/Icon_Grid.png</file>
         <file>assets/Images/Icon_Network.png</file>
+        <file>assets/mnist_db/mnist_png.tar.gz</file>
     </qresource>
 </RCC>

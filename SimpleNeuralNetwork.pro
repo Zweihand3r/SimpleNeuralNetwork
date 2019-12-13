@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     cpp/matrix.cpp \
     cpp/cpptests.cpp \
     cpp/util/filemanager.cpp \
-    cpp/util/input.cpp
+    cpp/util/input.cpp \
+    cpp/pixelextractor.cpp
 
 RESOURCES += qml.qrc \
     assets.qrc
@@ -41,4 +42,5 @@ HEADERS += \
     cpp/matrix.h \
     cpp/cpptests.h \
     cpp/util/filemanager.h \
-    cpp/util/input.h
+    cpp/util/input.h \
+    cpp/pixelextractor.h

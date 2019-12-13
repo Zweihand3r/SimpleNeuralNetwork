@@ -24,14 +24,28 @@ QString FileManager::loadFile(const QString path)
     return "";
 }
 
-QString FileManager::getPath(FileManager::DefaultDirectories dir)
+bool FileManager::checkIfDirExists(const QString path)
 {
-    switch (dir) {
-    case FileManager::ApplicationDirectory:
-        return QCoreApplication::applicationDirPath() + "/";
+    QDir dir(path);
+    return dir.exists();
+}
 
-    case FileManager::CurrentDirectory:
-    case FileManager::BuildDirectory:
-        return QDir::currentPath() + "/";
+QStringList FileManager::getDirFileNames(const QString dirPath, const QStringList filters)
+{
+    QDir dir(dirPath);
+    if (dir.exists()) {
+        return  dir.entryList(filters, QDir::Files | QDir::NoDotAndDotDot);
+    } else {
+        qDebug() << "filemanager.cpp: Directory at path " << dirPath << " does not exist";
+        return {};
     }
+}
+
+void FileManager::extractMnist()
+{
+    QDir dir("MNIST");
+    if (!dir.exists()) dir.mkpath(".");
+
+    QFile::copy(":/assets/mnist_db/mnist_png.tar.gz", "MNIST/mnist_png.tar.gz");
+    system("tar -zxf MNIST/mnist_png.tar.gz -C MNIST");
 }
