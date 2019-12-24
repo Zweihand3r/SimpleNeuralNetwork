@@ -21,7 +21,7 @@ Item {
             anchors { left: parent.left; top: parent.top; right: parent.right; margins: 8 }
 
             Repeater {
-                model: ["Extract Images", "Grab image pixels"]
+                model: ["Extract Images", "Grab image pixels", "Initialise", "Train", "Test Random", "Test Simple"]
 
                 Button {
                     text: modelData
@@ -33,6 +33,10 @@ Item {
                         switch (text) {
                         case "Extract Images": extractImages(); break
                         case "Grab image pixels": grabImagePixels(); break
+                        case "Initialise": initialise(); break
+                        case "Train": train(); break
+                        case "Test Random": testRandom(); break
+                        case "Test Simple": testSimple(); break
                         }
                     }
                 }
@@ -46,7 +50,7 @@ Item {
         }
 
         GridLayout {
-            rows: 28; columns: 28; rowSpacing: 0; columnSpacing: 0; anchors {
+            id: gridLt; rows: 28; columns: 28; rowSpacing: 0; columnSpacing: 0; anchors {
                 left: parent.left; top: parent.top; margins: 20
             }
 
@@ -59,6 +63,14 @@ Item {
                     Layout.preferredHeight: 4
                 }
             }
+        }
+
+        Text {
+            id: outputTxt; anchors {
+                left: gridLt.right; top: gridLt.top; right: parent.right; margins: 20
+            }
+
+            wrapMode: Text.WordWrap; font.pixelSize: 19
         }
     }
 
@@ -84,27 +96,129 @@ Item {
             const iterTrainNames = fileManager.getDirFileNames(trainPath, ["*.png"])
             const iterTestNames = fileManager.getDirFileNames(testPath, ["*.png"])
 
-            iterTrainNames.forEach(function(name) {
-                trainPaths.push(trainPath + "/" + name)
+            const iterTrainPaths = iterTrainNames.map(function(name) {
+                return trainPath + "/" + name
             })
 
-            iterTestNames.forEach(function(name) {
-                testPaths.push(testPath + "/" + name)
+            const iterTestPaths = iterTestNames.map(function(name) {
+                return testPath + "/" + name
             })
+
+            trainPaths.push(iterTrainPaths)
+            testPaths.push(iterTestPaths)
+
+            trainCount += iterTrainPaths.length
+            testCount += iterTestPaths.length
         }
 
-        console.log("ImageClassifier.qml: Loaded " + trainPaths.length + " training images and " + testPaths.length + " testing images")
+        console.log("ImageClassifier.qml: Loaded " + trainCount + " training images and " + testCount + " testing images")
     }
 
     function grabImagePixels() {
-        const randIndex = Math.floor(Math.random() * trainPaths.length)
-        const imagePath = trainPaths[randIndex]
+        const numRandIndex = Math.floor(Math.random() * trainPaths.length)
+        const numArr = trainPaths[numRandIndex]
+
+        const randIndex = Math.floor(Math.random() * numArr.length)
+        const imagePath = numArr[randIndex]
 
         console.log("ImageClassifier.qml: Fetching pixel data for image at path: " + imagePath)
 
         const pixelData = pixelExtractor.getPixelBrightnessFromImage(imagePath)
         pixelData.forEach(function(dat, index) {
             gridRep.itemAt(index).color = Qt.rgba(dat, dat, dat, 1)
+        })
+    }
+
+    function initialise() {
+        neural.initializeNetwork(784, 10, 498)
+    }
+
+    function train() {
+        let progress = 0
+
+        trainPaths.forEach(function(numPaths, index) {
+            let outputArr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            outputArr[index] = 1
+
+            let outputs = [outputArr.join(" ")]
+
+            numPaths.forEach(function(path, _index) {
+                const pixelData = pixelExtractor.getPixelBrightnessFromImage(path)
+                const inputs = [pixelData.join(" ")]
+
+//                console.log(path + ":")
+//                console.log("inputs: " + inputs)
+//                console.log("outputs: " + outputs)
+
+                const res = neural.train(inputs, outputs)
+                console.log(`${index} > ${res}`)
+
+//                console.log(`Trained images: ${++progress}/60000`)
+            })
+        })
+    }
+
+    function testRandom() {
+        const numRandIndex = Math.floor(Math.random() * testPaths.length)
+        const numArr = testPaths[numRandIndex]
+
+        const randIndex = Math.floor(Math.random() * numArr.length)
+        const imagePath = numArr[randIndex]
+
+        console.log("ImageClassifier.qml: Fetching pixel data for image at path: " + imagePath)
+
+        const pixelData = pixelExtractor.getPixelBrightnessFromImage(imagePath)
+        pixelData.forEach(function(dat, index) {
+            gridRep.itemAt(index).color = Qt.rgba(dat, dat, dat, 1)
+        })
+
+        const res = neural.compute([pixelData.join(" ")])
+        const resArr = res[0].split(" ")
+
+        let currentMax = 0
+        let currentMaxIndex = 0
+
+        for (let i = 0; i < resArr.length; i++) {
+            const current = parseFloat(resArr[i])
+            if (currentMax < current) {
+                console.log(currentMax + " < " + current + " at index " + i)
+                currentMax = current
+                currentMaxIndex = i
+            }
+        }
+
+        outputTxt.text = `<b>Neural output:</b> <br>${resArr.join("<br>")}<br><b>Output:</b> ${currentMaxIndex}`
+    }
+
+    function testSimple() {
+        const baseI = [
+                        "0 0 0",
+                        "0 0 1",
+                        "0 1 0",
+                        "0 1 1",
+                        "1 0 0",
+                        "1 0 1",
+                        "1 1 0",
+                        "1 1 1"
+                    ]
+
+        const baseO = ["0", "1", "0", "1", "0", "1", "0", "1"]
+
+        neural.initializeNetwork(3, 1, 4)
+
+        for (let i = 0; i < 100; i++) {
+            baseI.forEach(function(item, index) {
+                const inputs = [item]
+                const outputs = [baseO[index]]
+
+                neural.train(inputs, outputs)
+            })
+        }
+
+        baseI.forEach(function(item) {
+            const inputs = [item]
+            const res = neural.compute(inputs)
+            console.log(JSON.stringify(item) + " > " + JSON.stringify(res))
         })
     }
 }

@@ -127,8 +127,8 @@ void Neural::initializeNetwork(const int inputCount, const int outputCount, cons
     syn0 = randomisedWeights(inputCount, nodeCount);
     syn1 = randomisedWeights(nodeCount, outputCount);
 
-    qDebug() << "neural.cpp: syn0:" << syn0;
-    qDebug() << "neural.cpp: syn1:" << syn1;
+//    qDebug() << "neural.cpp: syn0:" << syn0;
+//    qDebug() << "neural.cpp: syn1:" << syn1;
 }
 
 void Neural::resetNetwork()
