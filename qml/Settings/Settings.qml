@@ -59,7 +59,7 @@ Item {
 
         OptionsTitle {
             Layout.alignment: Qt.AlignHCenter
-            text: "Tests"; color: col_prim; lineWidth: 40
+            text: "Dev Options"; color: col_prim; lineWidth: 40
         }
 
         Item { Layout.preferredHeight: 1 }
@@ -72,7 +72,7 @@ Item {
 
         Button_ {
             Layout.fillWidth: true
-            text: "Switch to Tests"
+            text: "Switch to Prototypes"
             onClicked: switchToTests()
         }
     }
@@ -92,6 +92,6 @@ Item {
 
     function switchToTests() {
         rootContent.visible = false
-        tests.visible = true
+        prototypes.visible = true
     }
 }

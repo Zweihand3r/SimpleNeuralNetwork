@@ -2,22 +2,11 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>Tests/Scripts/Giver.js</file>
-        <file>Tests/Scripts/Matrix.js</file>
-        <file>Tests/Scripts/Matrix_test.js</file>
-        <file>Tests/Scripts/Simple.js</file>
-        <file>Tests/AddNetwork.qml</file>
-        <file>Tests/Interface.qml</file>
-        <file>Tests/Simple.qml</file>
-        <file>Tests/Visualisation.qml</file>
         <file>qml/Switches/Switches.qml</file>
         <file>js/NeuralFunctions.js</file>
         <file>js/Matrix.js</file>
         <file>qml/Switches/SwitchRow.qml</file>
         <file>js/Permutation.js</file>
-        <file>Tests/Tests.qml</file>
-        <file>Tests/Grid_.qml</file>
-        <file>Tests/Toggle.qml</file>
         <file>qml/Content.qml</file>
         <file>qml/LoadingScreen.qml</file>
         <file>qml/Popup_.qml</file>
@@ -43,6 +32,5 @@
         <file>qml/Controls/Slider_.qml</file>
         <file>qml/Mover/MoveTable.qml</file>
         <file>qml/Settings/Settings.qml</file>
-        <file>Tests/ImageClassifier.qml</file>
     </qresource>
 </RCC>

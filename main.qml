@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.3
 import FileManager 1.1
 
 import './qml'
-import './Tests'
+import './prototypes'
 
 ApplicationWindow {
     visible: true
@@ -23,14 +23,14 @@ ApplicationWindow {
         id: dataManager
     }
 
-    Tests {
-        id: tests
-        visible: false
+    Prototypes {
+        id: prototypes
+//        visible: false
     }
 
     Content {
         id: content
-//        visible: false
+        visible: false
     }
 
     function printArray(arr, title) {
