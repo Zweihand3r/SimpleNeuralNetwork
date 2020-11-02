@@ -3,7 +3,7 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 
 import '../../js/Permutation.js' as Permute
-import '../../js/NeuralFunctions.js' as NeuralFunctions
+import '../../js/NeuralFunctions.js' as Neuf
 
 import '../Controls'
 
@@ -173,7 +173,7 @@ Item {
     function test() {
         var io = getInputsAndOutputs()
         clearNetworkOutputs()
-        weights = NeuralFunctions.train(io.inputs, io.outputs, trainBatchCount, 4)
+        weights = Neuf.train(io.inputs, io.outputs, trainBatchCount, 4)
     }
 
     function trainNetwork(visual) {
@@ -182,8 +182,12 @@ Item {
         inputs = io.inputs
         outputs = io.outputs
 
+        const inputSize = inputs[0].length
+        const outputSize = outputs[0].length
+        const nodeSize = Math.floor(inputSize * 2 / 3 + outputSize)
+
         if (weights.length === 0)
-            weights = NeuralFunctions.initializeWeights("random", inputs[0].length, outputs[0].length, 4)
+            weights = Neuf.initializeWeights("random", inputSize, outputSize, nodeSize)
 
         trainStepIndex = 0
 
@@ -196,7 +200,7 @@ Item {
 
     function trainLoop() {
         if (trainStepIndex < trainBatchCount) {
-            weights = NeuralFunctions.trainStep(inputs, outputs, weights, 4)
+            weights = Neuf.trainStep(inputs, outputs, weights, 4)
             trainStepIndex++
             totalStepsTrained++
         } else {
@@ -208,7 +212,7 @@ Item {
 
     function visualTrainLoop() {
         if (trainStepIndex < trainBatchCount) {
-            weights = NeuralFunctions.trainStep(inputs, outputs, weights, 4)
+            weights = Neuf.trainStep(inputs, outputs, weights, 4)
             trainStepIndex++
             totalStepsTrained++
 
@@ -228,7 +232,7 @@ Item {
         }
 
         inputs.forEach(function(input, index) {
-            var netout = NeuralFunctions.predict(input, weights)
+            var netout = Neuf.predict(input, weights)
             gridRepeater.itemAt(index).setNetworkOutput(netout)
         })
     }

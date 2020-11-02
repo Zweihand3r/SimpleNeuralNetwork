@@ -1,5 +1,7 @@
 Qt.include('Matrix.js')
 
+const enableLogs = false
+
 function train(inputs, outputs, steps, nodes) {
     var weights = []
 
@@ -10,20 +12,26 @@ function train(inputs, outputs, steps, nodes) {
         if (nodes === undefined) nodes = 4
         if (steps === undefined) steps = 100
 
-        console.log("Nodes set to: " + nodes)
-        console.log("Steps set to: " + steps)
+        if (enableLogs) {
+            console.log("Nodes set to: " + nodes)
+            console.log("Steps set to: " + steps)
+        }
 
         var weights_1 = random(inputs[0].length, nodes)
         var weights_2 = random(nodes, outputs[0].length)
 
-        printArray(inputs, "Inputs:")
-        printArray(outputs, "Outputs:")
-        console.log("Starting training session")
+        if (enableLogs) {
+            printArray(inputs, "Inputs:")
+            printArray(outputs, "Outputs:")
+            console.log("Starting training session")
+        }
 
         var startTime = new Date()
 
         for (var index = 0; index < steps; index++) {
-            console.log("Step " + (index + 1) + " of " + steps)
+            if (enableLogs) {
+                console.log("Step " + (index + 1) + " of " + steps)
+            }
 
             var l0 = inputs.slice()
             var l1 = sigmoid(dot(l0, weights_1))
@@ -39,14 +47,19 @@ function train(inputs, outputs, steps, nodes) {
             weights_1 = add(weights_1, dot(transpose(l0), l1_delta))
         }
 
-        printArray(weights_1, "Weights Layer 1")
-        printArray(weights_2, "Weights Layer 2")
+        if (enableLogs) {
+            printArray(weights_1, "Weights Layer 1")
+            printArray(weights_2, "Weights Layer 2")
+        }
 
         weights = [weights_1, weights_2]
     }
 
     var timeElapsed = (new Date() - startTime) / 1000
-    console.log("Finished training session in " + Number(timeElapsed).toFixed(3) + " sec")
+
+    if (enableLogs) {
+        console.log("Finished training session in " + Number(timeElapsed).toFixed(3) + " sec")
+    }
 
     return weights
 }
@@ -59,20 +72,26 @@ function trainBatch(inputs, outputs, weights, steps, nodes) {
         if (nodes === undefined) nodes = 4
         if (steps === undefined) steps = 100
 
-        console.log("Nodes set to: " + nodes)
-        console.log("Steps set to: " + steps)
+        if (enableLogs) {
+            console.log("Nodes set to: " + nodes)
+            console.log("Steps set to: " + steps)
+        }
 
         var weights_1 = weights[0]
         var weights_2 = weights[1]
 
-        printArray(inputs, "Inputs:")
-        printArray(outputs, "Outputs:")
-        console.log("Starting training session")
+        if (enableLogs) {
+            printArray(inputs, "Inputs:")
+            printArray(outputs, "Outputs:")
+            console.log("Starting training session")
+        }
 
         var startTime = new Date()
 
         for (var index = 0; index < steps; index++) {
-            console.log("Step " + (index + 1) + " of " + steps)
+            if (enableLogs) {
+                console.log("Step " + (index + 1) + " of " + steps)
+            }
 
             var l0 = inputs.slice()
             var l1 = sigmoid(dot(l0, weights_1))
@@ -88,12 +107,17 @@ function trainBatch(inputs, outputs, weights, steps, nodes) {
             weights_1 = add(weights_1, dot(transpose(l0), l1_delta))
         }
 
-        printArray(weights_1, "Weights Layer 1")
-        printArray(weights_2, "Weights Layer 2")
+        if (enableLogs) {
+            printArray(weights_1, "Weights Layer 1")
+            printArray(weights_2, "Weights Layer 2")
+        }
     }
 
     var timeElapsed = (new Date() - startTime) / 1000
-    console.log("Finished training session in " + Number(timeElapsed).toFixed(3) + " sec")
+
+    if (enableLogs) {
+        console.log("Finished training session in " + Number(timeElapsed).toFixed(3) + " sec")
+    }
 
     return [weights_1, weights_2]
 }

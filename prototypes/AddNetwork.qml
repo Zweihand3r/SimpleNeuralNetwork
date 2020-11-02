@@ -16,6 +16,7 @@ Item {
     property int trainSteps: parseInt(testStepTf.text)
 
     property int loopIndex: 0
+    property int operatorIndex: 0
 
     property int maxLoops: parseInt(testLoopsTf.text)
     property int stepsTrained: 0
@@ -23,7 +24,10 @@ Item {
     property int min: 0
     property int max: 100
 
-    property bool useSavedWeights: true
+    property int totalRandomOpsGenerated: 0
+    property real totalDiff: 0
+    property real avgDiff: 0
+
     property bool randomiseInputs: true
 
     property var logs: []
@@ -41,22 +45,19 @@ Item {
         ColumnLayout {
             anchors { left: parent.left; top: parent.top; right: parent.right; margins: 8 }
 
-            CheckBox {
-                Layout.fillWidth: true
-                text: "Saved weights"
-                checked: true
-                onCheckedChanged: useSavedWeights = checked
-            }
+            RowLayout {
+                Text { text: "Operator:" }
 
-            CheckBox {
-                Layout.fillWidth: true
-                text: "Randomise Inputs"
-                checked: true
-                onCheckedChanged: randomiseInputs = checked
+                ComboBox {
+                    model: ["+", "-", "*", "/"]
+                    Layout.preferredHeight: 30; Layout.fillWidth: true
+
+                    onActivated: operatorIndex = currentIndex
+                }
             }
 
             Repeater {
-                model: ["Initialize", "Train", "Generate Random Additions"]
+                model: ["Initialize", "Train", "Generate Random Ops"]
 
                 Button {
                     text: modelData
@@ -68,7 +69,7 @@ Item {
                         switch (text) {
                         case "Initialize": initialize(); break
                         case "Train": train(); break
-                        case "Generate Random Additions": generateRandom(); break
+                        case "Generate Random Ops": generateRandom(); break
                         }
                     }
                 }
@@ -212,6 +213,18 @@ Item {
                     }
                 }
             }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Text { text: "Average Diff (This Cycle): " }
+                Text { id: avgCycleText; text: "1.99" }
+            }
+
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Text { text: "Average Diff (Cumulative): " }
+                Text { id: avgText; text: avgDiff.toFixed(3) }
+            }
         }
     }
 
@@ -315,6 +328,10 @@ Item {
         loopIndex = 0
         stepsTrained = 0
         logs = []
+
+        totalRandomOpsGenerated = 0
+        totalDiff = 0
+        avgDiff = 0
     }
 
     function train() {
@@ -330,14 +347,20 @@ Item {
 
         console.log("Actual Values for session " + loopIndex)
         for (var index = 0; index < 10; index++) {
-            var a = parseInt(Math.random() * 100)
-            var b = parseInt(Math.random() * 100)
+            var a = parseInt(Math.random() * 99) + 1
+            var b = parseInt(Math.random() * 99) + 1
 
-            console.log(a + " + " + b + " = " + (a + b))
+            if (a < b) {
+                const c = b
+                b = a
+                a = c
+            }
+
+            console.log(operationString(a, b))
 
             arr_a.push(_normalize(a, min, max))
             arr_b.push(_normalize(b, min, max))
-            arr_c.push(_normalize(a + b, min, max * 2))
+            arr_c.push(_normalize(operation(a, b), min, getMax()))
         }
 
         inputs = []
@@ -361,14 +384,20 @@ Item {
         if (randomiseInputs) {
             console.log("Actual Values for loop " + loopIndex)
             for (var index = 0; index < 10; index++) {
-                a = parseInt(Math.random() * 100)
-                b = parseInt(Math.random() * 100)
+                a = parseInt(Math.random() * 99) + 1
+                b = parseInt(Math.random() * 99) + 1
 
-                console.log(a + " + " + b + " = " + (a + b))
+                if (a < b) {
+                    const c = b
+                    b = a
+                    a = c
+                }
+
+                console.log(operationString(a, b))
 
                 arr_a.push(_normalize(a, min, max))
                 arr_b.push(_normalize(b, min, max))
-                arr_c.push(_normalize(a + b, min, max * 2))
+                arr_c.push(_normalize(operation(a, b), min, getMax()))
             }
 
             inputs = []
@@ -419,15 +448,13 @@ Item {
 
         lineSeries.clear()
         avgSeries.clear()
-
         actualSeries.clear()
-        actualSeries.name = "Actual: " + a + " + " + b + " = " + (a + b)
 
         var avg = 0
 
         logs.forEach(function(weights, index) {
             var res_norm = Nef.predict([a_norm, b_norm], weights)
-            var res = _deNormalize(res_norm, min, max * 2)
+            var res = _deNormalize(res_norm, min, getMax())
 
             yMin = Math.min(yMin, res)
             yMax = Math.max(yMax, res)
@@ -439,13 +466,15 @@ Item {
             avg += res
         })
 
-        avg = avg / (logs.length - 1)
+        avg = Number(avg / (logs.length - 1)).toFixed(2)
 
-        actualSeries.append(0, (a + b))
-        actualSeries.append(logs.length - 1, (a + b))
+        actualSeries.append(0, operation(a, b))
+        actualSeries.append(logs.length - 1, operation(a, b))
+        actualSeries.name = "Actual: " + operationString(a, b)
 
         avgSeries.append(0, avg)
         avgSeries.append(logs.length - 1, avg)
+        avgSeries.name = "Avg: " + avg
 
         xAxis.min = 0
         xAxis.max = logs.length
@@ -466,16 +495,54 @@ Item {
 
         mainText.text = ""
 
+        let cycleAvg = 0
+
         for (var index = 0; index < 10; index++) {
             var a = parseInt(Math.random() * 100)
             var b = parseInt(Math.random() * 100)
+            if (a < b) { const c = b; b = a; a = c }
+            const opOut = operation(a, b)
             var inputs = [_normalize(a, min, max), _normalize(b, min, max)]
             var res_normal = Nef.predict(inputs, weights)
-            var res = _deNormalize(res_normal, min, max * 2)
+            var res = _deNormalize(res_normal, min, getMax())
 
 //            mainText.text += (a + " + " + b + " = " + (a + b) + " | " + res + "\n")
-            sumsRepeater.itemAt(index).text = a + " + " + b + " = " + (a + b) + " | " + res.toFixed(4)
+            sumsRepeater.itemAt(index).text = operationString(a, b) + " | " + res.toFixed(4)
             sumsRepeater.itemAt(index).numbers = [a, b]
+
+            totalDiff += Math.abs(res - opOut)
+            totalRandomOpsGenerated += 1
+
+            cycleAvg += Math.abs(res - opOut)
+        }
+
+        avgDiff = totalDiff / totalRandomOpsGenerated
+        avgCycleText.text = Number(cycleAvg / 10).toFixed(3)
+    }
+
+    function operation(a, b) {
+        switch (operatorIndex) {
+        case 0: return a + b
+        case 1: return a - b
+        case 2: return a * b
+        case 3: return a / b
+        }
+    }
+
+    function operationString(a, b) {
+        switch (operatorIndex) {
+        case 0: return `${a} + ${b} = ${a + b}`
+        case 1: return `${a} - ${b} = ${a - b}`
+        case 2: return `${a} * ${b} = ${a * b}`
+        case 3: return `${a} / ${b} = ${a / b}`
+        }
+    }
+
+    function getMax() {
+        switch (operatorIndex) {
+        case 0: return max * 2
+        case 2: return Math.pow(max, 2)
+        default: return max
         }
     }
 

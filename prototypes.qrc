@@ -12,5 +12,6 @@
         <file>prototypes/Toggle.qml</file>
         <file>prototypes/Visualisation.qml</file>
         <file>prototypes/Prototypes.qml</file>
+        <file>prototypes/ReverseOperations.qml</file>
     </qresource>
 </RCC>
