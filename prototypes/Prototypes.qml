@@ -17,21 +17,11 @@ Rectangle {
             id: simple
         }
 
-        AddNetwork {
-
-        }
-
-        Grid_ {
-
-        }
-
-        ImageClassifier {
-
-        }
-
-        Interface {
-
-        }
+        AddNetwork {}
+        ReverseOperations {}
+        Grid_ {}
+        ImageClassifier {}
+        Interface {}
     }
 
     RowLayout {
@@ -66,11 +56,11 @@ Rectangle {
 
         TabBar {
             id: tabbar
-            currentIndex: 3
+            currentIndex: 2
             Layout.fillWidth: true
 
             Repeater {
-                model: ["Simple", "Addnetwork", "Grid", "ImageClassifier", "Interface"]
+                model: ["Simple", "Addnetwork", "Reverse-Op", "Grid", "ImageClassifier", "Interface"]
                 TabButton { text: modelData }
             }
         }
