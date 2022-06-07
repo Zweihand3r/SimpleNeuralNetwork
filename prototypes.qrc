@@ -6,7 +6,6 @@
         <file>prototypes/Scripts/Simple.js</file>
         <file>prototypes/AddNetwork.qml</file>
         <file>prototypes/Grid_.qml</file>
-        <file>prototypes/ImageClassifier.qml</file>
         <file>prototypes/Interface.qml</file>
         <file>prototypes/Simple.qml</file>
         <file>prototypes/Toggle.qml</file>

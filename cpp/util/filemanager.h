@@ -27,9 +27,6 @@ public slots:
     bool checkIfDirExists(const QString path);
 
     QStringList getDirFileNames(const QString dirPath, const QStringList filters);
-
-    /* Specific */
-    void extractMnist();
 };
 
 #endif // FILEMANAGER_H

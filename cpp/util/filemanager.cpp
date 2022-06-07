@@ -40,12 +40,3 @@ QStringList FileManager::getDirFileNames(const QString dirPath, const QStringLis
         return {};
     }
 }
-
-void FileManager::extractMnist()
-{
-    QDir dir("MNIST");
-    if (!dir.exists()) dir.mkpath(".");
-
-    QFile::copy(":/assets/mnist_db/mnist_png.tar.gz", "MNIST/mnist_png.tar.gz");
-    system("tar -zxf MNIST/mnist_png.tar.gz -C MNIST");
-}

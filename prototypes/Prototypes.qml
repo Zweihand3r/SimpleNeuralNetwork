@@ -20,7 +20,6 @@ Rectangle {
         AddNetwork {}
         ReverseOperations {}
         Grid_ {}
-        ImageClassifier {}
         Interface {}
     }
 
@@ -60,7 +59,7 @@ Rectangle {
             Layout.fillWidth: true
 
             Repeater {
-                model: ["Simple", "Addnetwork", "Reverse-Op", "Grid", "ImageClassifier", "Interface"]
+                model: ["Simple", "Addnetwork", "Reverse-Op", "Grid", "Interface"]
                 TabButton { text: modelData }
             }
         }
