@@ -1,0 +1,72 @@
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: black;
+}
+
+.ctrl-root {
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  /* background-color: #ff000056; */
+}
+
+.layer-con {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* background-color: #00ff0056; */
+  margin: 8px;
+}
+
+.neuron-con {
+  display: flex;
+  flex-direction: column;
+  /* background-color: #0000ff56; */
+  margin: 8px;
+}
+
+.slider {
+  margin: 5px 0;
+  -webkit-appearance: none;
+  background-color: transparent;
+}
+
+.slider::-webkit-slider-runnable-track {
+  width: 300px;
+  height: 7px;
+  background: #333;
+  border: none;
+  border-radius: 3px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: #66aaff;
+  margin-top: -3px;
+}
+
+.slider:focus {
+  outline: none;
+}
+
+.slider:focus::-webkit-slider-runnable-track {
+  background: #333;
+}
+
+.slider-green::-webkit-slider-thumb {
+  background: #aa66ff;
+}
