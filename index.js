@@ -1,6 +1,6 @@
-import { initCanvas, drawNetwork } from "./src/canvas.js"
+import { initCanvas, drawNetwork, drawTruthTable } from "./src/canvas.js"
 import { initControls } from "./src/controls.js"
-import { Layer } from "./src/network.js"
+import { activationFunctions, Network } from "./src/network.js"
 
 const canvas = document.body.querySelector('#canvas')
 canvas.setAttribute('width', window.innerWidth)
@@ -9,39 +9,35 @@ canvas.setAttribute('height', window.innerHeight)
 const ctx = canvas.getContext('2d')
 initCanvas(ctx)
 
-const l1 = new Layer(2)
-const l2 = new Layer(3, l1)
-const l3 = new Layer(1, l2)
-const layers = [l1, l2, l3]
+const network = new Network(2, 3, 1)
+network.setActivationFunction(activationFunctions.relu)
+network.outputLayer.setActivationFunction(activationFunctions.sigmoid)
+const [l1, l2, l3] = network.layers
 
 const updateNetowrk = () => {
-  l2.forward()
-  l3.forward()
-  drawNetwork(ctx, layers)
+  network.forward()
+  drawNetwork(network.layers)
+  drawTruthTable([
+    network.compute([0, 0])[0].toFixed(2),
+    network.compute([0, 1])[0].toFixed(2),
+    network.compute([1, 0])[0].toFixed(2),
+    network.compute([1, 1])[0].toFixed(2)
+  ])
 }
 
-l1.setInputs([1, 1])
+network.setInputs([1, 0])
 updateNetowrk()
 
-initControls(layers, updateNetowrk)
+initControls(network.layers, updateNetowrk)
 
-window.setWeight = (li, ni, wi, v) => {
-  try {
-    layers[li].neurons[ni].weights[wi] = v
-  } catch (e) {
-    console.log(`Unable to set weight at ${li} -> ${ni} -> ${wi}: ${e}`)
-  }
-  updateNetowrk()
+window.compute = function() {
+  return network.compute(arguments)
 }
 
-window.setBias = (li, ni, v) => {
-  try {
-    layers[li].neurons[ni].bias = v
-  } catch (e) {
-    console.log(`Unable to set bias at ${li} -> ${ni}: ${e}`)
-  }
+window.setInputs = function() {
+  network.setInputs(arguments)
   updateNetowrk()
+  return 0
 }
 
-console.log(l1.neurons)
-console.log(l2.neurons)
+console.log(l1.neurons, l2.neurons, l3.neurons)

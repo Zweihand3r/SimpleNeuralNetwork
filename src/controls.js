@@ -1,6 +1,6 @@
 export const initControls = (layers, triggerRedraw) => {
   const ctrlRoot = createDiv(document.body, { className: 'ctrl-root' })
-  for (let li = 0; li < layers.length - 1; li++) {
+  for (let li = 1; li < layers.length; li++) {
     const layer = layers[li]
     const layerCon = createDiv(ctrlRoot, { className: 'layer-con' })
 
@@ -18,7 +18,7 @@ export const initControls = (layers, triggerRedraw) => {
       createSlider(neuronCon, v => {
         neuron.bias = parseFloat(v)
         triggerRedraw()
-      }, { color: 'green', range: [-4, 4] })
+      }, { color: 'green', range: [-5, 5] })
     }
   }
 }
@@ -37,7 +37,7 @@ const createDiv = (parent, { id, className, text }) => {
 }
 
 const createSlider = (parent, onChange, params) => {
-  const { color = '', range = [-2, 2] } = params || { color: '', range: [-2, 2] }
+  const { color = '', range = [-2, 2] } = params || { color: '', range: [-5, 5] }
   if (parent) {
     const slider = document.createElement('input')
     slider.type = 'range'

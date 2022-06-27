@@ -1,11 +1,16 @@
 import { drawCircle, drawLine, drawText } from "./util.js"
 
-export const initCanvas = ctx => {
+const TRUTH_TABLE_INPUT = ['0    0', '0    1', '1    0', '1    1']
+
+let ctx
+
+export const initCanvas = _ctx => {
+  ctx = _ctx
   ctx.translate(100, 100)
 }
 
-export const drawNetwork = (ctx, layers) => {
-  ctx.clearRect(-100, -100, ctx.canvas.width - 100, ctx.canvas.height - 100)
+export const drawNetwork = (layers) => {
+  ctx.clearRect(-100, -100, ctx.canvas.width, ctx.canvas.height)
 
   layers.forEach((layer, xi) => {
     layer.neurons.forEach((neuron, yi) => {
@@ -20,25 +25,52 @@ export const drawNetwork = (ctx, layers) => {
   layers.forEach(layer => {
     layer.neurons.forEach(neuron => {
       drawCircle(ctx, neuron.x, neuron.y, 35, '#fff')
-      neuron.outputNeurons.forEach((outputNeuron, i) => {
-        const x1 = neuron.x, y1 = neuron.y, x2 = outputNeuron.x, y2 = outputNeuron.y
+      neuron.inputNeurons.forEach((inputNeuron, i) => {
+        const x1 = inputNeuron.x, y1 = inputNeuron.y, x2 = neuron.x, y2 = neuron.y
         drawLine(ctx, x1, y1, x2, y2, ['#fff'])
         
         const angle = calculateAngle(x1, y1, x2, y2)
         const text = neuron.weights[i].toFixed(5)
         ctx.save()
-        ctx.translate(x1, y1)
+        ctx.translate(x2, y2)
         ctx.rotate(angle)
-        const { x, y, width } = drawText(ctx, 45, 1, text, { horzCentered: false, measureOnly: true })
+        // const { x, y, width } = drawText(ctx, 45, 1, text, { horzCentered: false, measureOnly: true })
+        const { x, y, width } = drawText(ctx, -120, 1, text, { horzCentered: false, measureOnly: true })
         ctx.fillStyle = '#000000'
         ctx.fillRect(x, y - 12, width, 14)
-        drawText(ctx, 45, 1, text, { horzCentered: false, color: '#66aaff' })
+        drawText(ctx, -120, 1, text, { horzCentered: false, color: '#66aaff' })
         ctx.restore()
       })
-      drawText(ctx, neuron.x, neuron.y, neuron.activation.toFixed(5), { color: '#000' })
-      drawText(ctx, neuron.x, neuron.y + 50, neuron.bias, { color: '#aa66ff' })
     })
   })
+  
+  layers.forEach((layer, i) => {
+    if (i > 0) {
+      layer.neurons.forEach(neuron => {
+        drawText(ctx, neuron.x, neuron.y, neuron.activation.toFixed(5), { color: '#000' })
+        drawText(ctx, neuron.x, neuron.y + 50, neuron.bias.toFixed(5), { color: '#aa66ff' })
+      })
+    } else {
+      layer.neurons.forEach(neuron => {
+        drawText(ctx, neuron.x, neuron.y, neuron.activation, { color: '#000' })
+      })
+    }
+  })
+}
+
+export const drawTruthTable = (values = [0, 0, 0, 0]) => {
+  ctx.save()
+  ctx.translate(720, 75)
+  for (let i = 0; i < TRUTH_TABLE_INPUT.length; i++) {
+    drawText(ctx, 0, i * 50, TRUTH_TABLE_INPUT[i])
+    ctx.beginPath()
+    ctx.rect(50, i * 50 - 4, 200, 6)
+    ctx.closePath()
+    ctx.stroke()
+    ctx.fillRect(50, i * 50 - 4, values[i] * 200, 6)
+    drawText(ctx, 300, i * 50, values[i])
+  }
+  ctx.restore()
 }
 
 const calculateAngle = (x1, y1, x2, y2) => {
