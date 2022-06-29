@@ -2,23 +2,27 @@ import { drawCircle, drawLine, drawText } from "./util.js"
 
 const TRUTH_TABLE_INPUT = ['0    0', '0    1', '1    0', '1    1']
 
-let ctx
+let ctx, savedLayers, savedTruthValues
+let tx = 100, ty = 100, maxNeurons = 0
 
 export const initCanvas = _ctx => {
   ctx = _ctx
-  ctx.translate(100, 100)
+  ctx.translate(tx, ty)
 }
 
 export const drawNetwork = (layers) => {
+  savedLayers = layers
   ctx.clearRect(-100, -100, ctx.canvas.width, ctx.canvas.height)
+
+  maxNeurons = 0
+  layers.forEach(layer => {
+    maxNeurons = Math.max(maxNeurons, layer.neurons.length)
+  })
 
   layers.forEach((layer, xi) => {
     layer.neurons.forEach((neuron, yi) => {
-      let offset = 0
-      if (xi === 0) offset = 74
-      else if (xi === 2) offset = 150
       neuron.x = xi * 300
-      neuron.y = yi * 150 + offset
+      neuron.y = yi * 150 + (maxNeurons * 150 - layer.neurons.length * 150) / 2
     })
   })
   
@@ -59,15 +63,16 @@ export const drawNetwork = (layers) => {
 }
 
 export const drawTruthTable = (values = [0, 0, 0, 0]) => {
+  savedTruthValues = values
   ctx.save()
-  ctx.translate(720, 75)
+  ctx.translate(720, (maxNeurons * 150 - 285) / 2)
   for (let i = 0; i < TRUTH_TABLE_INPUT.length; i++) {
     drawText(ctx, 0, i * 50, TRUTH_TABLE_INPUT[i])
     ctx.beginPath()
     ctx.rect(50, i * 50 - 4, 200, 6)
     ctx.closePath()
     ctx.stroke()
-    ctx.fillRect(50, i * 50 - 4, values[i] * 200, 6)
+    ctx.fillRect(50, i * 50 - 4, Math.min(values[i] * 200, 200), 6)
     drawText(ctx, 300, i * 50, values[i])
   }
   ctx.restore()
@@ -77,4 +82,31 @@ const calculateAngle = (x1, y1, x2, y2) => {
   const dx = x2 - x1
   const dy = y2 - y1
   return Math.atan(dy / dx)
+}
+
+
+/* Pan code */
+
+let mx, my, isMouseDown = false
+
+export const mousedown = e => {
+  mx = e.clientX
+  my = e.clientY
+  isMouseDown = true
+}
+
+export const mousemove = e => {
+  if (isMouseDown) {
+    tx = e.clientX - mx
+    ty = e.clientY - my
+    mx = e.clientX
+    my = e.clientY
+    ctx.translate(tx, ty)
+    drawNetwork(savedLayers)
+    drawTruthTable(savedTruthValues)
+  }
+}
+
+export const mouseup = e => {
+  isMouseDown = false
 }

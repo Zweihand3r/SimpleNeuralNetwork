@@ -109,6 +109,15 @@ export class Network {
     }
   }
 
+  loadWeightsAndBiases(data) {
+    for (let li = 0; li < this.layers.length; li++) {
+      for (let ni = 0; ni < this.layers[li].neurons.length; ni++) {
+        this.layers[li].neurons[ni].weights = data[li][ni].w
+        this.layers[li].neurons[ni].bias = data[li][ni].b
+      }
+    }
+  }
+
   forward() {
     for (let i = 1; i < this.layers.length; i++) {
       this.layers[i].forward()
@@ -134,6 +143,26 @@ export class Network {
       const li = layerIndices[i]
       this.layers[li].setActivationFunction(func)
     }
+  }
+
+  // returns the current network weights and biases in json
+  print(printInConsole = false) {
+    const layers = []
+    for (let li = 0; li < this.layers.length; li++) {
+      const layer = []
+      for (let ni = 0; ni < this.layers[li].neurons.length; ni++) {
+        const neuron = this.layers[li].neurons[ni]
+        layer.push({
+          w: neuron.weights,
+          b: neuron.bias
+        })
+      }
+      layers.push(layer)
+    }
+    if (printInConsole) {
+      console.log(layers)
+    }
+    return layers
   }
 }
 
