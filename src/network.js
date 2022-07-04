@@ -78,10 +78,15 @@ class Layer {
 
 export class Network {
   constructor() {
-    this.layers = []
-    for (let i in arguments) {
-      const count = arguments[i]
-      this.addLayer(count)
+    if (arguments.length > 0) {
+      this.layers = []
+      const layerCounts = Array.isArray(arguments[0]) ? arguments[0] : arguments
+      for (let i in layerCounts) {
+        const count = layerCounts[i]
+        this.addLayer(count)
+      }
+    } else {
+      throw('Invalid arguments')
     }
   }
 

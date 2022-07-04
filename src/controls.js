@@ -1,39 +1,38 @@
 import { activationFunctions } from "./network.js"
 
+const ACTIVATION_OPTIONS = ['relu', 'sigmoid']
+const PRESET_OPTIONS = ['NONE', 'xor_221_rs', 'xor_231_rs']
+
+let ctrlRoot
 let sliders = [], inputSliders = []
 let dropdowns = []
 
-export const initControls = (layers, triggerRedraw) => {
-  const ctrlRoot = createDiv(document.body, { className: 'ctrl-root' })
-  const _sliders = [], _inputSliders = []
-  
-  const inputLayerCon = createDiv(ctrlRoot, { className: 'layer-con input-layer-con' })
-  createDiv(inputLayerCon, { className: 'layer-title', text: 'INPUT LAYER' })
+export const initControls = (layers, triggerRedraw, presetSelected, params) => {
+  const { selectedPreset = '' } = params || { selectedPreset: '' }
 
-  const inputNeuronsCon = createDiv(inputLayerCon, { className: 'neuron-con' })
-  const inputLayer = layers[0]
-  for (let ini = 0; ini < inputLayer.neurons.length; ini++) {
-    _inputSliders.push(
-      createSlider(inputNeuronsCon, v => {
-        inputLayer.neurons[ini].activation = v
-        triggerRedraw()
-      }, { color: 'white', range: [0, 1], step: .01 })
-    )
+  if (ctrlRoot) {
+    sliders = []
+    inputSliders = []
+    dropdowns = []
+    ctrlRoot.innerHTML = ''
   }
+
+  ctrlRoot = createDiv(document.body, { className: 'ctrl-root' })
+  createOptions(ctrlRoot, layers, triggerRedraw, presetSelected, { selectedPreset })
 
   for (let li = 1; li < layers.length; li++) {
     const layer = layers[li]
     const layerCon = createDiv(ctrlRoot, { className: 'layer-con' })
-    const _slLayer = []
+    const slLayer = []
 
     const titleRow = createDiv(layerCon, { 
       className: 'layer-title',
-      text: (li === layers.length - 1 ? 'OUTPUT LAYER' : `LAYER ${li}`) + `${spaces(2)}|${spaces(2)}` 
+      text: (li === layers.length - 1 ? 'OUTPUT LAYER' : `LAYER ${li}`)
     })
 
     createDiv(titleRow, { text: `Activation Function -${spaces(2)}` })
     dropdowns.push(
-      createDropdown(titleRow, ['relu', 'sigmoid'], v => {
+      createDropdown(titleRow, ACTIVATION_OPTIONS, v => {
         layer.setActivationFunction(activationFunctions[v])
         triggerRedraw()
       })
@@ -42,10 +41,10 @@ export const initControls = (layers, triggerRedraw) => {
     for (let ni = 0; ni < layer.neurons.length; ni++) {
       const neuron = layer.neurons[ni]
       const neuronCon = createDiv(layerCon, { className: 'neuron-con' })
-      const _slNeuron = { w: [] }
+      const slNeuron = { w: [] }
 
       for (let wi = 0; wi < neuron.weights.length; wi++) {
-        _slNeuron.w.push(
+        slNeuron.w.push(
           createSlider(neuronCon, v => {
             neuron.weights[wi] = parseFloat(v)
             triggerRedraw()
@@ -53,19 +52,16 @@ export const initControls = (layers, triggerRedraw) => {
         )
       }
 
-      _slNeuron.b = createSlider(neuronCon, v => {
+      slNeuron.b = createSlider(neuronCon, v => {
         neuron.bias = parseFloat(v)
         triggerRedraw()
       }, { color: 'green', range: [-5, 5] })
 
-      _slLayer.push(_slNeuron)
+      slLayer.push(slNeuron)
     }
 
-    _sliders.push(_slLayer)
+    sliders.push(slLayer)
   }
-  
-  sliders = _sliders
-  inputSliders = _inputSliders
 }
 
 export const updateSliders = ({ inputs, layers }) => {
@@ -90,6 +86,36 @@ export const updateDropdowns = afNames => {
   for (let i = 0; i < dropdowns.length; i++) {
     dropdowns[i].value = afNames[i]
   }
+}
+
+const createOptions = (parent, layers, triggerRedraw, presetSelected, params) => {
+  const { selectedPreset = '' } = params || { selectedPreset: '' }
+
+  let _inputSliders = []
+  const inputLayerCon = createDiv(parent, { className: 'layer-con input-layer-con' })
+  createDiv(inputLayerCon, { className: 'layer-title', text: 'OPTIONS' })
+
+  const inputNeuronsCon = createDiv(inputLayerCon, { className: 'neuron-con' })
+  createDiv(inputNeuronsCon, { className: 'ctrl-lbl', text: 'Inputs' })
+
+  const inputLayer = layers[0]
+  for (let ini = 0; ini < inputLayer.neurons.length; ini++) {
+    _inputSliders.push(
+      createSlider(inputNeuronsCon, v => {
+        inputLayer.neurons[ini].activation = v
+        triggerRedraw()
+      }, { color: 'white', range: [0, 1], step: .01 })
+    )
+  }
+
+  createVertSpacing(inputNeuronsCon, 12)
+  createDiv(inputNeuronsCon, { className: 'ctrl-lbl', text: 'Network Presets' })
+  createDropdown(inputLayerCon, PRESET_OPTIONS, v => {
+    presetSelected(v)
+  }, { value: selectedPreset, className: 'ctrl-item' })
+  createVertSpacing(inputLayerCon, 12)
+
+  inputSliders = _inputSliders
 }
 
 const createDiv = (parent, params) => {
@@ -128,20 +154,32 @@ const createSlider = (parent, onChange, params) => {
   }
 }
 
-const createDropdown = (parent, list, onChange) => {
+const createDropdown = (parent, list, onChange, params) => {
+  const { value, className } = params || {}
   if (parent) {
     const select = document.createElement('select')
+    select.className = className || ''
     list.forEach(item => {
       const option = document.createElement('option')
       option.value = item
       option.innerHTML = item
       select.appendChild(option)
     })
+    if (value) {
+      select.value = value
+    }
     select.addEventListener('change', e => onChange(e.target.value))
     parent.appendChild(select)
     return select
   } else {
     throw (`parent needs to be specified`)
+  }
+}
+
+const createVertSpacing = (parent, spacing) => {
+  if (parent) {
+    const div = createDiv(parent)
+    div.style.height = `${spacing}px`
   }
 }
 
