@@ -1,7 +1,11 @@
+import { newNetworkModal, selectionListModal } from "./modals.js"
 import { activationFunctions } from "./network.js"
+import { 
+  createButton, createDiv, createDropdown, createHorzSpacing, createSlider, createVertSpacing, spaces 
+} from "./ui-comps.js"
 
 const ACTIVATION_OPTIONS = ['relu', 'sigmoid']
-const PRESET_OPTIONS = ['NONE', 'xor_221_rs', 'xor_231_rs']
+const PRESET_OPTIONS = ['xor_221_rs', 'xor_231_rs']
 
 let ctrlRoot
 let sliders = [], inputSliders = []
@@ -15,10 +19,11 @@ export const initControls = (layers, triggerRedraw, presetSelected, params) => {
     inputSliders = []
     dropdowns = []
     ctrlRoot.innerHTML = ''
+  } else {
+    ctrlRoot = createDiv(document.body, { className: 'ctrl-root' })
   }
 
-  ctrlRoot = createDiv(document.body, { className: 'ctrl-root' })
-  createOptions(ctrlRoot, layers, triggerRedraw, presetSelected, { selectedPreset })
+  initOptions(ctrlRoot, layers, triggerRedraw, presetSelected, { selectedPreset })
 
   for (let li = 1; li < layers.length; li++) {
     const layer = layers[li]
@@ -30,7 +35,7 @@ export const initControls = (layers, triggerRedraw, presetSelected, params) => {
       text: (li === layers.length - 1 ? 'OUTPUT LAYER' : `LAYER ${li}`)
     })
 
-    createDiv(titleRow, { text: `Activation Function -${spaces(2)}` })
+    createDiv(titleRow, { text: `${spaces(2)}|${spaces(2)}Activation Function -${spaces(2)}` })
     dropdowns.push(
       createDropdown(titleRow, ACTIVATION_OPTIONS, v => {
         layer.setActivationFunction(activationFunctions[v])
@@ -88,7 +93,7 @@ export const updateDropdowns = afNames => {
   }
 }
 
-const createOptions = (parent, layers, triggerRedraw, presetSelected, params) => {
+const initOptions = (parent, layers, triggerRedraw, presetSelected, params) => {
   const { selectedPreset = '' } = params || { selectedPreset: '' }
 
   let _inputSliders = []
@@ -109,78 +114,19 @@ const createOptions = (parent, layers, triggerRedraw, presetSelected, params) =>
   }
 
   createVertSpacing(inputNeuronsCon, 12)
-  createDiv(inputNeuronsCon, { className: 'ctrl-lbl', text: 'Network Presets' })
-  createDropdown(inputLayerCon, PRESET_OPTIONS, v => {
-    presetSelected(v)
-  }, { value: selectedPreset, className: 'ctrl-item' })
-  createVertSpacing(inputLayerCon, 12)
+  createDiv(inputNeuronsCon, { className: 'ctrl-lbl', text: 'Network' })
+  createVertSpacing(inputNeuronsCon, 6)
+
+  const row = createDiv(inputNeuronsCon, { className: 'row' })
+  createButton(row, 'New', () => {
+    newNetworkModal(layers => presetSelected({ layers }))
+  })
+
+  createHorzSpacing(row, 12)
+
+  createButton(row, 'Load', () => {
+    selectionListModal(PRESET_OPTIONS, presetKey => presetSelected({ presetKey }))
+  })
 
   inputSliders = _inputSliders
 }
-
-const createDiv = (parent, params) => {
-  const { id, className, text } = params || {}
-  if (parent) {
-    const div = document.createElement('div')
-    if (id) div.id = id
-    if (className) div.className = className
-    if (text) div.innerHTML = text
-    parent.appendChild(div)
-    return div
-  } else {
-    throw (`parent needs to be specified`)
-  }
-}
-
-const createSlider = (parent, onChange, params) => {
-  const { 
-    color = '', range = [-2, 2], step = .00001 
-  } = params || { 
-    color: '', range: [-5, 5], step: .00001 
-  }
-  if (parent) {
-    const slider = document.createElement('input')
-    slider.type = 'range'
-    slider.className = `slider slider-${color}`
-    slider.value = 0
-    slider.min = range[0]
-    slider.max = range[1]
-    slider.step = step
-    slider.addEventListener('input', e => onChange(e.target.value))
-    parent.appendChild(slider)
-    return slider
-  } else {
-    throw (`parent needs to be specified`)
-  }
-}
-
-const createDropdown = (parent, list, onChange, params) => {
-  const { value, className } = params || {}
-  if (parent) {
-    const select = document.createElement('select')
-    select.className = className || ''
-    list.forEach(item => {
-      const option = document.createElement('option')
-      option.value = item
-      option.innerHTML = item
-      select.appendChild(option)
-    })
-    if (value) {
-      select.value = value
-    }
-    select.addEventListener('change', e => onChange(e.target.value))
-    parent.appendChild(select)
-    return select
-  } else {
-    throw (`parent needs to be specified`)
-  }
-}
-
-const createVertSpacing = (parent, spacing) => {
-  if (parent) {
-    const div = createDiv(parent)
-    div.style.height = `${spacing}px`
-  }
-}
-
-const spaces = (count) => Array(count).fill('&nbsp').join('')

@@ -80,9 +80,8 @@ export class Network {
   constructor() {
     if (arguments.length > 0) {
       this.layers = []
-      const layerCounts = Array.isArray(arguments[0]) ? arguments[0] : arguments
-      for (let i in layerCounts) {
-        const count = layerCounts[i]
+      for (let i in arguments) {
+        const count = arguments[i]
         this.addLayer(count)
       }
     } else {

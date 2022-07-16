@@ -1,4 +1,4 @@
-import { initCanvas, drawNetwork, drawTruthTable, mousemove, mousedown, mouseup } from "./src/canvas.js"
+import { initCanvas, drawNetwork, drawTruthTable, mousemove, mousedown, mouseup, enableTruthTable } from "./src/canvas.js"
 import { initControls, updateDropdowns, updateSliders } from "./src/controls.js"
 import { Network, activationFunctions } from "./src/network.js"
 import presets, { parsePreset } from "./src/presets.js"
@@ -14,20 +14,21 @@ canvas.addEventListener('mousemove', mousemove)
 canvas.addEventListener('mouseup', mouseup)
 canvas.addEventListener('mouseout', mouseup)
 
-let network
+let network, truthTableEnabled
 
-const initNetwork = presetKey => {
-  if (!presetKey) {
-    network = new Network(2, 2, 1)
+const initNetwork = ({ presetKey, layers }) => {
+  if (layers) {
+    network = new Network(...layers)
     network.setActivationFunction(activationFunctions.relu)
     network.outputLayer.setActivationFunction(activationFunctions.sigmoid)
   
     initControls(network.layers, updateNetowrk, presetSelected)
-  } else {
+    updateTruthTableFeasibility(layers)
+  } else if (presetKey) {
     const preset = presets[presetKey]
     const { layers, activations } = parsePreset(presetKey)
 
-    network = new Network(layers)
+    network = new Network(...layers)
     initControls(network.layers, updateNetowrk, presetSelected, { selectedPreset: presetKey })
 
     network.loadWeightsAndBiases(preset)
@@ -37,6 +38,8 @@ const initNetwork = presetKey => {
       network.layers[i].setActivationFunction(activationFunctions[activations[i - 1]])
     }
     updateDropdowns(activations)
+  } else {
+    throw('Please provide a presetKey or layers to initialise the network')
   }
   
   updateNetowrk()
@@ -45,21 +48,26 @@ const initNetwork = presetKey => {
 const updateNetowrk = () => {
   network.forward()
   drawNetwork(network.layers)
-  drawTruthTable([
-    network.compute([0, 0])[0].toFixed(2),
-    network.compute([0, 1])[0].toFixed(2),
-    network.compute([1, 0])[0].toFixed(2),
-    network.compute([1, 1])[0].toFixed(2)
-  ])
-}
-
-const presetSelected = presetKey => {
-  if (presetKey !== 'NONE') {
-    initNetwork(presetKey)
+  if (truthTableEnabled) {
+    drawTruthTable([
+      network.compute([0, 0])[0].toFixed(2),
+      network.compute([0, 1])[0].toFixed(2),
+      network.compute([1, 0])[0].toFixed(2),
+      network.compute([1, 1])[0].toFixed(2)
+    ])
   }
 }
 
-initNetwork()
+const presetSelected = ({ presetKey, layers }) => {
+  initNetwork({ presetKey, layers })
+}
+
+const updateTruthTableFeasibility = layers => {
+  truthTableEnabled = layers[0] === 2 && layers[layers.length - 1] === 1
+  enableTruthTable(truthTableEnabled)
+}
+
+initNetwork({ layers: [2, 2, 1] })
 
 
 /* Console functions */

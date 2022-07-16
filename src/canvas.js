@@ -4,6 +4,7 @@ const TRUTH_TABLE_INPUT = ['0    0', '0    1', '1    0', '1    1']
 
 let ctx, savedLayers, savedTruthValues
 let tx = 100, ty = 100, maxNeurons = 0
+let truthTableEnabled
 
 export const initCanvas = _ctx => {
   ctx = _ctx
@@ -62,20 +63,26 @@ export const drawNetwork = (layers) => {
   })
 }
 
+export const enableTruthTable = v => {
+  truthTableEnabled = v
+}
+
 export const drawTruthTable = (values = [0, 0, 0, 0]) => {
-  savedTruthValues = values
-  ctx.save()
-  ctx.translate(720, (maxNeurons * 150 - 285) / 2)
-  for (let i = 0; i < TRUTH_TABLE_INPUT.length; i++) {
-    drawText(ctx, 0, i * 50, TRUTH_TABLE_INPUT[i])
-    ctx.beginPath()
-    ctx.rect(50, i * 50 - 4, 200, 6)
-    ctx.closePath()
-    ctx.stroke()
-    ctx.fillRect(50, i * 50 - 4, Math.min(values[i] * 200, 200), 6)
-    drawText(ctx, 300, i * 50, values[i])
+  if (truthTableEnabled) {
+    savedTruthValues = values
+    ctx.save()
+    ctx.translate(720, (maxNeurons * 150 - 285) / 2)
+    for (let i = 0; i < TRUTH_TABLE_INPUT.length; i++) {
+      drawText(ctx, 0, i * 50, TRUTH_TABLE_INPUT[i])
+      ctx.beginPath()
+      ctx.rect(50, i * 50 - 4, 200, 6)
+      ctx.closePath()
+      ctx.stroke()
+      ctx.fillRect(50, i * 50 - 4, Math.min(values[i] * 200, 200), 6)
+      drawText(ctx, 300, i * 50, values[i])
+    }
+    ctx.restore()
   }
-  ctx.restore()
 }
 
 const calculateAngle = (x1, y1, x2, y2) => {
